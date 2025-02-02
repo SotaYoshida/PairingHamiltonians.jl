@@ -8,7 +8,8 @@ I started to use Julia in 2018, and I was fascinated by the performance, the sim
 the philosophy of the Julia language, such as the following:
 [Why We Created Julia](https://julialang.org/blog/2012/02/why-we-created-julia)
 
-Upon the request to give a lecture in a summer school in Japan, I decided to develop a Julia package to solve the pairing Hamiltonian with a bunch of many-body methods in nuclear physics.
+Upon the request to give a lecture in a summer school in Japan, I decided to develop a Julia package and open it to the public.
+The pairing Hamiltonian is a simple model, but it is very important in nuclear physics, condensed matter physics, and provides a good starting point to learn methods to solve many-body problems, quantum computing, and so on.
 
 Nuclear many-body methods today are very diverse and rich. This may originate from a long history of nuclear physics and rich phenomena in nuclei, which have led to the development of many methods to describe the nuclear structure and reactions from different perspectives.
 This is a good thing and very fascinating. I really love the diversity of the methods and the rich phenomena in nuclei.

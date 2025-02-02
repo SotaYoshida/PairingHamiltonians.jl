@@ -167,7 +167,7 @@ function E_BCS_from_uv(epsilon, epsilon_p, vs, Delta, lambda, gval, debug_mode)
 end
 
 """
-    _main_BCS(Norb, Nocc, epsilon, gval, to, debug_mode; max_iter=1000)
+    BCS(Norb, Nocc, epsilon, gval, to, debug_mode; max_iter=1000)
 
 Main function to calculate the ground state energy of the BCS Hamiltonian.
 
@@ -182,7 +182,7 @@ Main function to calculate the ground state energy of the BCS Hamiltonian.
 # Optional arguments
 - `max_iter::Int(1000)`: maximum number of iterations
 """
-function _main_BCS(Norb, Nocc, epsilon, gval, to, debug_mode;
+function BCS(Norb, Nocc, epsilon, gval, to, debug_mode;
                      max_iter=1000)
     Random.seed!(123)
     # initialize Bogoliubov coefficients

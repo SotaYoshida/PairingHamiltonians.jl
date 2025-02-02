@@ -300,7 +300,6 @@ end
 Main function to evaluate the ground state energy of the pairing Hamiltonian.
 
 # Arguments
-- `to::TimerOutput`: timer object to measure the elapsed time
 
 # Optional arguments
 - `Norb_in::Int(8)`: number of orbitals
@@ -310,9 +309,12 @@ Main function to evaluate the ground state energy of the pairing Hamiltonian.
 - `debug_mode::Int(0)`: specify the debug mode
 - `solver::String("FCI(2-fold)")`: method to solve the Hamiltonian. This can be one of "Full-CI", "Full-CI(2-fold)", "HF", "BCS", "CCD", "IMSRG(2)". If "HF" is chosen, PT2/PT3 energies are also calculated.
 - `save_Exact_wf::Bool(false)`: save the full-CI wave functions as HDF5 files, which can be used for e.g. analysis of the wave functions and constructing surrogate models like eigenvector continuation.
+- `to`: either nothing or TimerOutput object defined in a user script.
 """
-function main_pairHamil(to; Norb_in::Int=8, Nocc_in::Int=4, gval::Float64=0.33, delta_eps::Float64=1.0,
-                        debug_mode::Int=0, solver::String="Full-CI(2-fold)", save_Exact_wf::Bool=false)
+function main_pairHamil(;Norb_in::Int=8, Nocc_in::Int=4, gval::Float64=0.33, delta_eps::Float64=1.0,
+                        debug_mode::Int=0, solver::String="Full-CI(2-fold)", save_Exact_wf::Bool=false,
+                        to_in=nothing)
+    to = ifelse(to_in==nothing, TimerOutput(), to_in)
     # working on single particle basis or pair basis
     degenerate = false
     if occursin("2-fold", solver)
@@ -361,11 +363,11 @@ function main_pairHamil(to; Norb_in::Int=8, Nocc_in::Int=4, gval::Float64=0.33, 
     Eret = Dict{String, Float64}()
     @timeit to "solve" begin
         if occursin("Full-CI", solver)
-            E0 = _main_FCI(Hmat, dim_basis, Norb, Nocc, gval, save_Exact_wf, to, debug_mode)
+            E0 = FCI(Hmat, dim_basis, Norb, Nocc, gval, save_Exact_wf, to, debug_mode)
             println("E(Full-CI) = $E0")
             Eret[solver] = E0
         elseif solver == "HF" || solver == "CCD" || solver == "IMSRG(2)"
-            E0, EPT2, EPT3, HNO, holes, particles = _main_HF(Nocc, h1b, h2b, gval, to, debug_mode)
+            E0, EPT2, EPT3, HNO, holes, particles = HF(Nocc, h1b, h2b, gval, to, debug_mode)
             F = HNO.f
             if solver == "HF"
                 println("E(HF) = $E0, E(HF+PT2) = $(E0 + EPT2) E(HF+PT2+PT3) = $(E0 + EPT2 + EPT3)")
@@ -373,18 +375,18 @@ function main_pairHamil(to; Norb_in::Int=8, Nocc_in::Int=4, gval::Float64=0.33, 
                 Eret["MBPT2"] = E0 + EPT2
                 Eret["MBPT3"] = E0 + EPT2 + EPT3
             elseif solver == "CCD"
-                ECCD = _main_CC(F, gval, Nocc, to, debug_mode)                 
+                ECCD = CCD(F, gval, Nocc, to, debug_mode)                 
                 Eret[solver] = E0 + ECCD
                 println("E(CCD) = $(E0+ECCD)")
             elseif solver == "IMSRG(2)"
-                E_IMSRG = _main_IMSRG(HNO, holes, particles, gval, Nocc, to, debug_mode) 
+                E_IMSRG = IMSRG(HNO, holes, particles, gval, Nocc, to, debug_mode) 
                 Eret[solver] = E_IMSRG
                 println("E(IMSRG(2)) = $(E_IMSRG)")
             end
         elseif solver == "BCS"
             E0 = NaN 
             if gval > 0.2
-                E0 = _main_BCS(Norb, Nocc, epsilon, gval, to, debug_mode)
+                E0 = BCS(Norb, Nocc, epsilon, gval, to, debug_mode)
                 println("E(BCS) = $E0")
             end
             Eret[solver] = E0

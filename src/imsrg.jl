@@ -256,7 +256,7 @@ function eval_derivatives!(dH::Operator, eta_1b, eta_2b, f, Γ, idx2b, coppy_mat
             end
         end
         # 3rd term: contributing
-        for i = 1:dim1b
+        @threads for i=1:dim1b
             for j =1:dim1b
                 tmp = 0.0
                 for c in holes
@@ -479,8 +479,28 @@ function making_matrices_for_222ph(Γ, kets, holes)
     return Mat222ph(Mat_Nab, Mat_Npp, Mat_Nhh, eta_ph, Γ_ph, dummy1, dummy2, dΓ_ph)
 end
 
-function _main_IMSRG(HNO, holes, particles, gval, Nocc, to, debug_mode;
-                    smax = 15.0, tol_eta=1.e-6, ds=1.e-2)
+"""
+    IMSRG(HNO, holes, particles, gval, Nocc, to, debug_mode;
+                smax = 15.0, tol_eta=1.e-4, ds=1.e-2)
+
+Main function to perform the IMSRG calculation.
+
+# Arguments
+- `HNO::Hamiltonian_NormalOrdered`: Hamiltonian in normal ordered form
+- `holes::Vector{Int64}`: indices of the holes
+- `particles::Vector{Int64}`: indices of the particles
+- `gval::Float64`: strength of the interaction
+- `Nocc::Int64`: number of occupied orbitals
+- `to::TimeOutput`: output object to measure the time
+- `debug_mode::Int64`: level of debug information
+
+# Optional arguments
+- `smax::Float64`: maximum value of the flow parameter
+- `tol_eta::Float64`: tolerance of the generator
+- `ds::Float64`: step size of the flow parameter
+"""
+function IMSRG(HNO, holes, particles, gval, Nocc, to, debug_mode;
+                    smax = 15.0, tol_eta=1.e-4, ds=1.e-2)
     F = HNO.f; dim1b = size(F,1)
     # Define 2b-kets for the model space
     idx2b, kets = generate_2b_kets(dim1b, holes, particles)
