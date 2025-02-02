@@ -1,8 +1,18 @@
+"""
+    operate_H_on_vec!(w, Hamil_mat::Array{Float64, 2}, v)
+
+Function to compute the matrix-vector product of the Hamiltonian matrix and a vector.
+"""
 function operate_H_on_vec!(w, Hamil_mat::Array{Float64, 2}, v)
     mul!(w, Hamil_mat, v)
     return nothing
 end
 
+"""
+    operate_H_on_vec!(w, Hamil_mat::Dict{UInt64, Float64}, v)
+
+Sparse version of the function to compute the matrix-vector product of the Hamiltonian matrix in the form of `Dict{UInt64, Float64}` and a vector.
+"""
 function operate_H_on_vec!(w, Hamil_mat::Dict{UInt64, Float64}, v)
     w .= 0.0
     for nkey in keys(Hamil_mat)
@@ -17,9 +27,25 @@ function operate_H_on_vec!(w, Hamil_mat::Dict{UInt64, Float64}, v)
 end
 
 """
-Use the Lanczos method to compute the smallest eigenvalue of the Hamiltonian.
+    lanczos(Hamil_mat, dim, save_Exact_wf, to; itnum=300, tol=1e-9, debug_mode=0)
+
+Function to compute the lowest eigenvalue of the Hamiltonian using the Lanczos method.
+
+Constructing a Krylov subspace ``\\mathcal{K}_m(H,v) = \\mathrm{span}\\{v, Hv, H^2v, \\cdots, H^{m-1}v\\}``,
+and the tridiagonal matrix ``T_m = V_m^T H V_m`` where ``V_m = [v_1, v_2, \\cdots, v_m]`` and ``v_{m+1} = H v_m - \\alpha_m v_m - \\beta_m v_{m-1}``, the Lanczos method iteratively constructs the matrix ``T_m`` and diagonalizes it to obtain the smallest eigenvalue of ``H``.
+
+# Arguments
+- `Hamil_mat`: Hamiltonian matrix, either a `Matrix{Float64}` or a `Dict{UInt64, Float64}`.
+- `dim`: Dimension of the basis, i.e. number of configurations
+- `save_Exact_wf`: If `true`, save the exact wave function to a HDF5 file
+- `to`: TimerOutput object
+
+# Optional arguments
+- `itnum`: Number of Lanczos iterations
+- `tol`: Tolerance for convergence
+- `debug_mode`: the level of debug information
 """
-function Lanczos(Hamil_mat, dim, save_Exact_wf, to; itnum=300, tol=1e-9, debug_mode=0)
+function lanczos(Hamil_mat, dim, save_Exact_wf, to; itnum=300, tol=1e-9, debug_mode=0)
     println("Starting Lanczos iteration...")
     Random.seed!(1234)
     v1 = rand(dim)
@@ -66,6 +92,22 @@ function Lanczos(Hamil_mat, dim, save_Exact_wf, to; itnum=300, tol=1e-9, debug_m
     return tE, evec
 end
 
+"""
+    make_gs_wf(vks, Tmat, Lan_itnum, num_ev)
+
+Function to construct the ground state wave function from the Lanczos vectors.
+
+```math
+|\\psi_{\\rm GS}\\rangle = \\sum_{k=1}^{D} c_k |v_k\\rangle
+```
+where `D` is the number of Lanczos iterations, and ``c_k`` is the eigenvector of the tridiagonal matrix ``T`` corresponding to the smallest eigenvalue.
+
+# Arguments
+- `vks`: Lanczos vectors
+- `Tmat`: Tridiagonal matrix
+- `Lan_itnum`: Number of Lanczos iterations
+- `num_ev`: Number of the eigenvector to be used
+"""
 function make_gs_wf(vks, Tmat, Lan_itnum, num_ev)
     evec = zeros(Float64, length(vks[1]))
     vals, vecs = eigen(@views Tmat[1:Lan_itnum,1:Lan_itnum])
@@ -75,6 +117,17 @@ function make_gs_wf(vks, Tmat, Lan_itnum, num_ev)
     return evec
 end
 
+"""
+    write_Exact_wf_hdf5(evec, Norb, Nocc, gval)
+
+Function to save the exact wave function to a HDF5 file.
+
+# Arguments
+- `evec`: Exact wave function
+- `Norb`: Number of orbitals
+- `Nocc`: Number of occupied orbitals
+- `gval`: Interaction strength
+"""
 function write_Exact_wf_hdf5(evec, Norb, Nocc, gval)
     if !isdir("eigenstates_fullCI")
         mkdir("eigenstates_fullCI")
@@ -90,9 +143,24 @@ function write_Exact_wf_hdf5(evec, Norb, Nocc, gval)
 end
 
 """
-Compute the eigenvalues of the Hamiltonian by diagonalization.
+    _main_FCI(Hamil_mat, dim_basis, Norb, Nocc, gval, save_Exact_wf, to, debug_mode=0; return_only_E0=true)
+
+Main function to compute the ground state energy with the full CI method.
+If the system size is small, the Hamiltonian matrix is explicitly constructed and diagonalized using the `eigen` function in LinearAlgebra.jl.
+If the system size is large, the Hamiltonian matrix is sparsely represented and the Lanczos method is used to compute the smallest eigenvalue.
+
+# Arguments
+- `Hamil_mat`: Hamiltonian matrix, either a `Matrix{Float64}` or a `Dict{UInt64, Float64}`.
+- `dim_basis`: Dimension of the basis, i.e. number of configurations
+- `Norb`: Number of orbitals
+- `Nocc`: Number of occupied orbitals
+- `gval`: Interaction strength
+- `save_Exact_wf`: If `true`, save the exact wave function to a HDF5 file
+- `to`: TimerOutput object
+- `debug_mode`: the level of debug information
+- `return_only_E0`: If `true`, return only the ground state energy, otherwise return the eigenvalues and eigenvectors
 """
-function get_Egs_diagonalization(Hamil_mat, dim_basis, Norb, Nocc, gval, save_Exact_wf, to, debug_mode=0; return_only_E0=true)
+function _main_FCI(Hamil_mat, dim_basis, Norb, Nocc, gval, save_Exact_wf, to, debug_mode=0; return_only_E0=true)
     sparce_rep = (typeof(Hamil_mat) != Matrix{Float64})
     if !sparce_rep
         @timeit to "solver: eigen" evals, evecs = eigen(Hamil_mat)
@@ -105,16 +173,25 @@ function get_Egs_diagonalization(Hamil_mat, dim_basis, Norb, Nocc, gval, save_Ex
             return evals, evecs
         end
     else
-        @timeit to "solver: Lanczos" E0, evec = Lanczos(Hamil_mat, dim_basis, save_Exact_wf, to;debug_mode=debug_mode)
+        @timeit to "solver: Lanczos" E0, evec = lanczos(Hamil_mat, dim_basis, save_Exact_wf, to;debug_mode=debug_mode)
         if save_Exact_wf
             write_Exact_wf_hdf5(evec, Norb, Nocc, gval)
         end
+        if !return_only_E0
+            @error "return_only_E0 must be `true`` when using the Lanczos method"
+        end
+        return E0
     end
-    return E0
 end
 
 """
-Reorthogonalize for Lanczos methods.
+    reOrthogonalize!(w, vks, i)
+
+Re-orthogonalize the vector w with respect to the previous vectors:
+
+```math
+w := w - \\sum_{j=1}^{i} \\langle w, v_j \\rangle v_j
+```
 """
 function reOrthogonalize!(w, vks, i)
     for j in 1:i

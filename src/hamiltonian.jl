@@ -1,3 +1,17 @@
+"""
+struct for pairing Hamiltonian
+
+# Fields
+- `Norb::Int`: Number of orbitals
+- `Nocc::Int`: Number of occupied orbitals
+- `degenerate::Bool`: Whether assume degenerate orbitals or not. It will be True only when Norb is even and the method is "Full-CI(2-fold)".
+- `gval::Float64`: Pairing strength
+- `dim_basis::Int`: Dimension of the basis
+- `basis::Vector{Int}`: List of configurations
+- `delta_eps::Float64`: Energy difference between orbitals
+- `epsilon::Vector{Float64}`: Single-particle energies
+- `H::Matrix{Float64}`: Hamiltonian matrix
+"""
 struct paringHamiltonian
     Norb::Int
     Nocc::Int
@@ -59,7 +73,9 @@ function prepare_basis(N, n)
 end
 
 """
-Convert a bitstring representation (e.g., "00110") to an integer.
+    bitstr2int(bitstr::String)::Int
+
+Convert a bitstring representation (e.g., "00110") to an integer (e.g., 6).
 """
 function bitstr2int(bitstr::String)
     N = length(bitstr)
@@ -67,17 +83,21 @@ function bitstr2int(bitstr::String)
 end
 
 """
-Convert an integer to a bitstring of length N.
-Similar thing can be done with string funciton, but this is more proper way for "0" padding. 
+    int2bitstr(x::Int, N::Int)::String
+
+Convert an integer to a bitstring of length `N`.
+Similar thing can be done with string function in Julia, but this is more proper way for "0" padding. 
 """
 function int2bitstr(x, N)
     return string(bitstring(x)[end-N+1:end] |> s -> lpad(s, N, '0'))
 end
 
 """
+    check_connectivity(psi_l::Int, psi_r::Int, p::Int, q::Int, Nq::Int)::Bool
+
 Check if the configurations (in bit representation) are connected by the Hamiltonian.
 """
-function check_connectivity(psi_l, psi_r, p, q, Nq)
+function check_connectivity(psi_l::Int, psi_r::Int, p::Int, q::Int, Nq::Int)
     if p == q
         if int2bitstr(psi_l, Nq)[p] == '1'
             return true
@@ -92,23 +112,40 @@ function check_connectivity(psi_l, psi_r, p, q, Nq)
     return false
 end
 
+"""
+    unhash_key2(key::UInt64)::Tuple{Int, Int}
+    
+Unhash the key to the pair of indices.
+""" 
 function unhash_key2(key::UInt64)
     i = Int(key >> 32)    
     j = Int(key & 0xffffffff)
     return i, j
 end
 
+"""
+    hash_key2(i::Int, j::Int)::UInt64
+
+Hash the pair of indices to a key.
+"""
 function hash_key2(i,j)::UInt64
     key = (UInt64(i) << 32) +  UInt64(j)
     return key
 end
 
 """
-Evaluate the Hamiltonian matrix elements.
+    eval_Hamil(method::String, basis::Vector{Int}, eps::Vector{Float64}, g::Float64, Nq::Int, degenerate::Bool; debug_mode::Int=0, sparce_rep::Bool=false)::Tuple{Matrix{Float64}, Matrix{Float64}, Union{Matrix{Float64}, Dict{UInt64, Float64}}}
 
-Note that "1" and '1' are different in Julia. The former is a string, while the latter is a character.
+Function to evaluate the Hamiltonian matrix elements.
+Once the number of orbitals and the number of occupied states are given,
+one can prepare the Hamiltonian matrix elements in the full matrix representation or sparse representation.
+For larger systems, sparse representation using `Dict{UInt64, Float64}` is used instead of storing the full matrix.
+The keys of the dictionary correspond to the integer representation of many-body configurations.
+
+Note that `"1"` and `'1'` are different in Julia. The former is a string, while the latter is a character.
 """
-function eval_Hamil(method, basis, eps, g, Nq, degenerate; debug_mode=0, sparce_rep=false)
+function eval_Hamil(method::String, basis::Vector{Int}, eps::Vector{Float64}, g::Float64, 
+                    Nq::Int, degenerate::Bool; debug_mode::Int=0, sparce_rep::Bool=false)
     dim = length(basis)
     req = dim^2 * 8 / 1024^3
     mem = Sys.total_memory() / 1024^3
@@ -239,10 +276,6 @@ function eval_Hamil(method, basis, eps, g, Nq, degenerate; debug_mode=0, sparce_
     return h1b, h2b, Hamil_mat
 end
 
-function get_idx_pair(i, j, Nq)
-    return div(i*(2*Nq-i-1), 2) + j - i - 1
-end
-
 function eval_h1_h2(Nq, eps::Vector{Float64}, g::Float64, sum_step)
     h1b = zeros(Float64, Nq, Nq)
     h2b_dim = div(Nq * (Nq - 1), 2)
@@ -260,8 +293,26 @@ function eval_h1_h2(Nq, eps::Vector{Float64}, g::Float64, sum_step)
     return h1b, h2b
 end
 
-function main_pairHamil(to; Norb_in::Int=8, Nocc_in::Int=4, gval::Float64=0.33, delta_eps::Float64=1.0,
+"""
+    main_pairHamil(to; Norb_in::Int=8, Nocc_in::Int=4, gval::Float64=0.33, delta_eps::Float64=1.0,
                         debug_mode::Int=0, solver::String="FCI(2-fold)", save_Exact_wf::Bool=false)
+
+Main function to evaluate the ground state energy of the pairing Hamiltonian.
+
+# Arguments
+- `to::TimerOutput`: timer object to measure the elapsed time
+
+# Optional arguments
+- `Norb_in::Int(8)`: number of orbitals
+- `Nocc_in::Int(4)`: number of occupied states
+- `gval::Float64(0.33)`: pairing strength
+- `delta_eps::Float64(1.0)`: energy difference between orbitals
+- `debug_mode::Int(0)`: specify the debug mode
+- `solver::String("FCI(2-fold)")`: method to solve the Hamiltonian. This can be one of "Full-CI", "Full-CI(2-fold)", "HF", "BCS", "CCD", "IMSRG(2)". If "HF" is chosen, PT2/PT3 energies are also calculated.
+- `save_Exact_wf::Bool(false)`: save the full-CI wave functions as HDF5 files, which can be used for e.g. analysis of the wave functions and constructing surrogate models like eigenvector continuation.
+"""
+function main_pairHamil(to; Norb_in::Int=8, Nocc_in::Int=4, gval::Float64=0.33, delta_eps::Float64=1.0,
+                        debug_mode::Int=0, solver::String="Full-CI(2-fold)", save_Exact_wf::Bool=false)
     # working on single particle basis or pair basis
     degenerate = false
     if occursin("2-fold", solver)
@@ -310,11 +361,11 @@ function main_pairHamil(to; Norb_in::Int=8, Nocc_in::Int=4, gval::Float64=0.33, 
     Eret = Dict{String, Float64}()
     @timeit to "solve" begin
         if occursin("Full-CI", solver)
-            E0 = get_Egs_diagonalization(Hmat, dim_basis, Norb, Nocc, gval, save_Exact_wf, to, debug_mode)
+            E0 = _main_FCI(Hmat, dim_basis, Norb, Nocc, gval, save_Exact_wf, to, debug_mode)
             println("E(Full-CI) = $E0")
             Eret[solver] = E0
         elseif solver == "HF" || solver == "CCD" || solver == "IMSRG(2)"
-            E0, EPT2, EPT3, HNO, holes, particles = get_Egs_HF(Nocc, h1b, h2b, gval, to, debug_mode)
+            E0, EPT2, EPT3, HNO, holes, particles = _main_HF(Nocc, h1b, h2b, gval, to, debug_mode)
             F = HNO.f
             if solver == "HF"
                 println("E(HF) = $E0, E(HF+PT2) = $(E0 + EPT2) E(HF+PT2+PT3) = $(E0 + EPT2 + EPT3)")
@@ -322,18 +373,18 @@ function main_pairHamil(to; Norb_in::Int=8, Nocc_in::Int=4, gval::Float64=0.33, 
                 Eret["MBPT2"] = E0 + EPT2
                 Eret["MBPT3"] = E0 + EPT2 + EPT3
             elseif solver == "CCD"
-                ECCD = main_CC(F, h2b, gval, Nocc, to, debug_mode)                 
+                ECCD = _main_CC(F, gval, Nocc, to, debug_mode)                 
                 Eret[solver] = E0 + ECCD
                 println("E(CCD) = $(E0+ECCD)")
             elseif solver == "IMSRG(2)"
-                E_IMSRG = main_IMSRG(HNO, holes, particles, gval, Nocc, to, debug_mode) 
+                E_IMSRG = _main_IMSRG(HNO, holes, particles, gval, Nocc, to, debug_mode) 
                 Eret[solver] = E_IMSRG
                 println("E(IMSRG(2)) = $(E_IMSRG)")
             end
         elseif solver == "BCS"
             E0 = NaN 
             if gval > 0.2
-                E0 = get_Egs_BCS(Norb, Nocc, epsilon, gval, to, debug_mode)
+                E0 = _main_BCS(Norb, Nocc, epsilon, gval, to, debug_mode)
                 println("E(BCS) = $E0")
             end
             Eret[solver] = E0

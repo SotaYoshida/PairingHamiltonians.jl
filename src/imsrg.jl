@@ -96,6 +96,19 @@ function get_idx2b(idx2b, i, j)
     return idx2b[tkey]
 end
 
+"""
+    eta_white_atan!(eta_1b, eta_2b, f, Γ, idx2b, kets, holes, particles)
+
+Destructive function to evaluate the generator of IMSRG flow equation, η.
+
+```math
+\\begin{align}
+\\eta & = \\eta^{(1)} + \\eta^{(2)} \\nonumber \\\\
+& = \\frac{1}{2} \\sum_{ph} \\arctan\\left(\\frac{f_{ph}(s)}{\\Delta_{ph}(s)}\\right) \\{  a^\\dagger_p a_h \\}
++ \\frac{1}{8} \\sum_{pp'hh'} \\arctan\\left(\\frac{2 \\Gamma_{pp'h'h}(s)}{\\Delta_{pp'hh'}(s)}\\right) \\{  a^\\dagger_p a^\\dagger_{p'} a_h a_{h'} \\} - H.c.. \\nonumber
+\\end{align}
+```
+"""
 function eta_white_atan!(eta_1b, eta_2b, f, Γ, idx2b, kets, holes, particles)
     # one-body
     for a in particles
@@ -466,7 +479,7 @@ function making_matrices_for_222ph(Γ, kets, holes)
     return Mat222ph(Mat_Nab, Mat_Npp, Mat_Nhh, eta_ph, Γ_ph, dummy1, dummy2, dΓ_ph)
 end
 
-function main_IMSRG(HNO, holes, particles, gval, Nocc, to, debug_mode;
+function _main_IMSRG(HNO, holes, particles, gval, Nocc, to, debug_mode;
                     smax = 15.0, tol_eta=1.e-6, ds=1.e-2)
     F = HNO.f; dim1b = size(F,1)
     # Define 2b-kets for the model space

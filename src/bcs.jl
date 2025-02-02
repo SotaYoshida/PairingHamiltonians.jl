@@ -1,16 +1,21 @@
 """
-    uv_from_Lam_Delta!(Delta, lambda, epsilon_p, us, vs)
+    uv_from_Lam_Delta!(Delta, lambda, epsilon_p::Vector{Float64}, us::Vector{Float64}, vs::Vector{Float64})
 
-Calculate the Bogoliubov coefficients `us` and `vs` from the gap parameter `Delta` and the chemical potential `lambda`.
+Destructively update the Bogoliubov coefficients `us` and `vs` from the gap parameter `Delta` and the chemical potential `lambda`:
+
+```math
+u^2_a = \\frac{1}{2} \\left( 1 + \\frac{\\epsilon'_a - \\lambda}{\\sqrt{(\\epsilon'_a - \\lambda)^2 + \\Delta^2}} \\right)  \\\\
+v^2_a = \\frac{1}{2} \\left( 1 - \\frac{\\epsilon'_a - \\lambda}{\\sqrt{(\\epsilon'_a - \\lambda)^2 + \\Delta^2}} \\right) 
+```
 
 # Arguments
 - `Delta::Float64`: gap parameter
 - `lambda::Float64`: chemical potential
 - `epsilon_p::Vector{Float64}`: `epsilon_p[i] = epsilon[i] - g v[i]^2`
-- `us::Vector{Float64}`: `u[i]`
-- `vs::Vector{Float64}`: `v[i]`
+- `us::Vector{Float64}`: `u` coefficients of Bogoliubov transformation
+- `vs::Vector{Float64}`: `v` coefficients of Bogoliubov transformation
 """
-function uv_from_Lam_Delta!(Delta, lambda, epsilon_p, us, vs)
+function uv_from_Lam_Delta!(Delta, lambda, epsilon_p::Vector{Float64}, us::Vector{Float64}, vs::Vector{Float64})
     for i = 1:length(epsilon_p)
         ep = epsilon_p[i]
         us[i] = sqrt( 0.5 * ( 1.0 + (ep - lambda) / denom(ep, lambda, Delta) ) )
@@ -40,14 +45,14 @@ end
 """
     eval_Delta(vs, us, gval)
 
-Calculate the gap parameter `Delta` from `vs`, `us`, and `gval`.
+Calculate the gap parameter `Delta`: `` \\Delta \\equiv \\frac{g}{2} \\sum_{\\alpha} u_a v_a ``
 
 # Arguments
 - `vs::Vector{Float64}`: `v[i]`
 - `us::Vector{Float64}`: `u[i]`
 - `gval::Float64`: `g`
 """
-function eval_Delta(vs, us, gval)
+function eval_Delta(vs, us, gval)::Float64
     delta = 0.5 * gval  * dot(vs, us)
     return delta
 end
@@ -56,7 +61,24 @@ function denom(epsilon, lambda, Delta)
     return sqrt( (epsilon - lambda)^2 + Delta^2 )
 end
 
-function reeval_Delta(lambda, Delta, epsilon_p, gval, debug_mode, alpha=0.5)
+"""
+    reeval_Delta(lambda, Delta, epsilon_p, gval, debug_mode, alpha=0.5)::Float64
+
+Update the gap parameter `Delta` iteratively with the following equation:
+
+```math
+\\Delta^\\mathrm{new} := \\alpha \\Delta^\\mathrm{new} + (1-\\alpha) \\frac{g}{4} \\sum_{\\alpha} \\frac{\\Delta}{\\sqrt{(\\epsilon'_a - \\lambda)^2 + \\Delta^2}}
+```
+
+# Arguments
+- `lambda::Float64`: chemical potential
+- `Delta::Float64`: current gap parameter
+- `epsilon_p::Vector{Float64}`: `epsilon_p[i] = epsilon[i] - g v[i]^2`
+- `gval::Float64`: `g`
+- `debug_mode::Int`: specify the debug mode
+- `alpha::Float64`: mixing parameter to update `Delta`, which may be useful to stabilize the calculation
+"""
+function reeval_Delta(lambda, Delta, epsilon_p, gval, debug_mode, alpha=0.5)::Float64
     ret = 0.0
     for i in eachindex(epsilon_p)
         ret += 1.0 / denom(epsilon_p[i], lambda, Delta)
@@ -68,7 +90,16 @@ function reeval_Delta(lambda, Delta, epsilon_p, gval, debug_mode, alpha=0.5)
     return ret
 end
 
-function Neval(epsilon_p, lambda, Delta)
+"""
+    Neval(epsilon_p, lambda, Delta)::Float64
+
+Calculate the expectation value of the particle number from the chemical potential `lambda` and the gap parameter `Delta` via the following equation:
+
+```math
+N  = \\sum_{\\alpha} \\frac{1}{2} \\left( 1 - \\frac{\\epsilon'_a - \\lambda}{\\sqrt{(\\epsilon'_a - \\lambda)^2 + \\Delta^2}} \\right)
+```
+"""
+function Neval(epsilon_p, lambda, Delta)::Float64
     tot = 0.0
     for i = 1:length(epsilon_p)
         tot += 0.5 
@@ -83,7 +114,7 @@ end
 Update the chemical potential `lambda` iteratively with the following equation:
 
 ```math
-\\lambda^\\mathrm{new} := & \\frac{g}{2} \\left( N_\\mathrm{occ.} - \\frac{N_\\mathrm{orb.}}{2} + \\frac{1}{2} \\sum_{\\alpha} \\frac{\\epsilon'_a }{\\sqrt{(\\epsilon'_a - \\lambda)^2 + \\Delta^2}} \\right)
+\\lambda^\\mathrm{new} := \\frac{g}{2} \\left( N_\\mathrm{occ.} - \\frac{N_\\mathrm{orb.}}{2} + \\frac{1}{2} \\sum_{\\alpha} \\frac{\\epsilon'_a }{\\sqrt{(\\epsilon'_a - \\lambda)^2 + \\Delta^2}} \\right)
 ```
 
 # Arguments
@@ -110,7 +141,16 @@ function update_lambda(Nocc, lambda, Delta, epsilon_p, gval, debug_mode, alpha=0
     return lambda_new
 end
 
-function E_BCS_from_uv(iter, epsilon, epsilon_p, vs, Delta, lambda, gval, debug_mode)
+"""
+    E_BCS_from_uv(epsilon, epsilon_p, vs, Delta, lambda, gval, debug_mode)
+
+Calculate the ground state energy of the BCS Hamiltonian from the Bogoliubov coefficients `vs` and `us`:
+
+```math
+E_\\mathrm{BCS} = \\sum_{\\alpha} \\epsilon'_a  v^2_a - \\frac{\\Delta^2}{g}
+```
+"""
+function E_BCS_from_uv(epsilon, epsilon_p, vs, Delta, lambda, gval, debug_mode)
     E_BCS = term_0 = term_1 = 0.0
     for i in 1:length(epsilon)
         term_0 += epsilon[i] * vs[i]^2
@@ -127,7 +167,7 @@ function E_BCS_from_uv(iter, epsilon, epsilon_p, vs, Delta, lambda, gval, debug_
 end
 
 """
-    get_Egs_BCS(Norb, Nocc, epsilon, gval, to, debug_mode; max_iter=1000)
+    _main_BCS(Norb, Nocc, epsilon, gval, to, debug_mode; max_iter=1000)
 
 Main function to calculate the ground state energy of the BCS Hamiltonian.
 
@@ -142,7 +182,7 @@ Main function to calculate the ground state energy of the BCS Hamiltonian.
 # Optional arguments
 - `max_iter::Int(1000)`: maximum number of iterations
 """
-function get_Egs_BCS(Norb, Nocc, epsilon, gval, to, debug_mode;
+function _main_BCS(Norb, Nocc, epsilon, gval, to, debug_mode;
                      max_iter=1000)
     Random.seed!(123)
     # initialize Bogoliubov coefficients
@@ -161,7 +201,7 @@ function get_Egs_BCS(Norb, Nocc, epsilon, gval, to, debug_mode;
     # It is convenient to define the array to store epsilon' = epsilon - g v^2
     epsilon_p = zeros(Float64, length(epsilon))
     eval_eps_p!(epsilon_p, epsilon, vs, gval)
-    E_BCS_prev = E_BCS = E_BCS_from_uv(0, epsilon, epsilon_p, vs, Delta, lambda, gval, debug_mode)
+    E_BCS_prev = E_BCS = E_BCS_from_uv(epsilon, epsilon_p, vs, Delta, lambda, gval, debug_mode)
 
     # Iteration for self-consistent calculation
     for iter = 1:max_iter
@@ -179,7 +219,7 @@ function get_Egs_BCS(Norb, Nocc, epsilon, gval, to, debug_mode;
         eval_eps_p!(epsilon_p, epsilon, vs, gval)
         
         # calculate E_BCS
-        E_BCS = E_BCS_from_uv(iter, epsilon, epsilon_p, vs, Delta, lambda, gval, debug_mode)
+        E_BCS = E_BCS_from_uv(epsilon, epsilon_p, vs, Delta, lambda, gval, debug_mode)
 
         # check convergence
         if abs(E_BCS - E_BCS_prev) < 1.e-6

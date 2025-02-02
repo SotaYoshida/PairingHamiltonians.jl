@@ -4,7 +4,7 @@ struct Hamiltonian_NormalOrdered
     Gamma::Vector{Float64}
 end
 
-function eval_EHF(h1b, h2b, gval, rho, Nocc)
+function eval_EHF(h1b, gval, rho, Nocc)
     Nq = size(h1b, 1)
     e1b = e2b = 0.0
     for α = 1:Nocc
@@ -19,7 +19,7 @@ function eval_EHF(h1b, h2b, gval, rho, Nocc)
     return e1b, e2b, EHF
 end
 
-function eval_Fock!(F, rho, h1b, h2b, Nocc, gval)
+function eval_Fock!(F, rho, h1b, Nocc, gval)
     Nq = size(h1b, 1)
     F .= 0.0
     for α = 1:Nq
@@ -99,7 +99,7 @@ end
 """
 Compute the energies of the Hamiltonian by the Hartree-Fock method and perturbation theory.
 """
-function get_Egs_HF(Nocc, h1b, h2b, gval, to, debug_mode=0; return_only_E0=true, itnum_max=30, tol=1e-9)
+function _main_HF(Nocc, h1b, h2b, gval, to, debug_mode=0; return_only_E0=true, itnum_max=30, tol=1e-9)
     Nq = size(h1b, 1)
     F = zeros(Float64, Nq, Nq)
     rho = zeros(Float64, Nq, Nq)
@@ -111,10 +111,10 @@ function get_Egs_HF(Nocc, h1b, h2b, gval, to, debug_mode=0; return_only_E0=true,
     Eprev = EHF = 1.e5
     @timeit to "HF" for i = 1:itnum_max
         eval_rho!(rho, U, Nocc)
-        eval_Fock!(F, rho, h1b, h2b, Nocc, gval)
+        eval_Fock!(F, rho, h1b, Nocc, gval)
         @timeit to "solver: eigen Fock." evals, evecs = eigen(F)
         U .= evecs'
-        e1b, e2b, EHF = eval_EHF(h1b, h2b, gval, rho, Nocc)
+        e1b, e2b, EHF = eval_EHF(h1b, gval, rho, Nocc)
         if debug_mode > 0
             println("it = $i \t EHF $EHF = ($e1b + $e2b)")
         end

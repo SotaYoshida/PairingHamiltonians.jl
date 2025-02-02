@@ -31,14 +31,13 @@ function unhash_key4(key::UInt64)
 end
 
 """
-    main_CC(F, h2b, gval, Nocc, to, debug_mode; itnum=100, tol=1e-9, mix_ratio=0.25)
+    _main_CC(F, gval, Nocc, to, debug_mode; itnum=100, tol=1e-9, mix_ratio=0.25)
 
 Main function to calculate the ground state energy of the pairing Hamiltonian using the coupled cluster method.
 Since the Hamiltonian is the pairing model, we don't need to consider 1p1h excitations, CCD instead of CCSD, etc.
 
 # Arguments
 - `F::Array{Float64, 2}`: Fock matrix from the Hartree-Fock calculation
-- `h2b::Dict{UInt64, Float64}`: two-body Hamiltonian in the pairing model
 - `gval::Float64`: strength of the pairing interaction
 - `Nocc::Int`: number of occupied states
 - `to::TimerOutput`: timer object to measure the elapsed time
@@ -48,8 +47,12 @@ Since the Hamiltonian is the pairing model, we don't need to consider 1p1h excit
 - `itnum::Int(100)`: maximum number of iterations
 - `tol::Float64(1e-9)`: convergence criterion
 - `mix_ratio::Float64(0.25)`: mixing ratio for the update of the t2 amplitudes
+
+# References
+- [Shavitt, I., & Bartlett, R. J. (2009). Many-body methods in chemistry and physics: MBPT and coupled-cluster theory. Cambridge University Press.](https://www.cambridge.org/jp/academic/subjects/chemistry/physical-chemistry/many-body-methods-chemistry-and-physics-mbpt-and-coupled-cluster-theory)
+- [Justin G. Lietz, Samuel Novario, Gustav R. Jansen, Gaute Hagen & Morten Hjorth-Jensen, Computational Nuclear Physics and Post Hartree-Fock Methods](https://link.springer.com/chapter/10.1007/978-3-319-53336-0_8), part of the book series: [Lecture Notes in Physics ((LNP,volume 936))](https://link.springer.com/book/10.1007/978-3-319-53336-0)
 """
-function main_CC(F, h2b, gval, Nocc, to, debug_mode; itnum=100, tol=1e-9, mix_ratio=0.25)
+function _main_CC(F, gval, Nocc, to, debug_mode; itnum=100, tol=1e-9, mix_ratio=0.25)
     dim = size(F, 1)
     dim_p = dim - Nocc
     dim_h = Nocc
@@ -70,13 +73,13 @@ function main_CC(F, h2b, gval, Nocc, to, debug_mode; itnum=100, tol=1e-9, mix_ra
             t2_pphh[idx_pp, idx_hh] = t2b 
         end
     end
-    E_CC = eval_ECC(F, h2b, t2_pphh, Nocc, gval)
+    E_CC = eval_ECC(F, t2_pphh, Nocc, gval)
 
-    χ = construct_chi(F, h2b, t2_pphh, Nocc, gval, debug_mode)
+    χ = construct_chi(F,t2_pphh, Nocc, gval, debug_mode)
     for it = 1:itnum
         update_χ!(χ, F, t2_pphh, Nocc, gval)
         eval_Hbar_pphh!(Hbar_pphh, t2_pphh, t2_pphh_new, F, χ, Nocc, gval)
-        E = eval_ECC(F, h2b, t2_pphh_new, Nocc, gval)
+        E = eval_ECC(F, t2_pphh_new, Nocc, gval)
         if debug_mode > 0
             println("It $it, E = $E norm t2 $(2*norm(t2_pphh)) new $(2*norm(t2_pphh_new))")
         end
@@ -240,7 +243,7 @@ end
 """
 `i,j,k` are hole indices, `a,b,c` are particle indices.
 """
-function construct_chi(F, h2b, t2_pphh, Nocc, gval, debug_mode=0)
+function construct_chi(F, t2_pphh, Nocc, gval, debug_mode=0)
     dim = size(F, 1)
     dim_p = dim - Nocc
     dim_h = Nocc
@@ -378,7 +381,7 @@ function eval_Hbar_pphh!(Hbar_pphh, t2_pphh, t2_pphh_new, F, χ::chi_intermediat
     return nothing
 end
 
-function eval_ECC(F, h2b, t2_pphh, Nocc, gval)
+function eval_ECC(F, t2_pphh, Nocc, gval)
     dim = size(F, 1)
     E2b = 0.0
     for i = 1:2:Nocc
