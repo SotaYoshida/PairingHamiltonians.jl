@@ -13,7 +13,7 @@ One can use the following methods to solve the pairing Hamiltonian with the pack
    Under this method, MBPT calculation with the HF reference state are carried out.
 - "BCS": Bardeen-Cooper-Schrieffer
 - "CCD": Coupled Cluster, especially CCD
-- "IMSRG": In-Medium Similarity Renormalization Group, especially IM-SRG(2)
+- "IMSRG(2)": In-Medium Similarity Renormalization Group, especially IM-SRG(2)
 
 
 ```@autodocs

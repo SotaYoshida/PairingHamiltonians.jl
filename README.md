@@ -1,5 +1,7 @@
 # PairingHamiltonian.jl
 
+![](logo/logo_PairingHamiltonian.png)
+
 Julia package solving pairing hamiltonian
 
 The package covers the following methods:
