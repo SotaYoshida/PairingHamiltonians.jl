@@ -11,7 +11,7 @@ using StatsBase
 using TimerOutputs
 
 include("hamiltonian.jl")
-export main_pairHamil
+export Pairing_Hamiltonian
 export eval_Hamil
 include("fullCI.jl")
 include("bcs.jl")
@@ -22,4 +22,4 @@ include("imsrg.jl")
 include("eigenvector_continuation.jl")
 export EC_from_FCI
 
-end # module ParingHamiltonian
+end 
