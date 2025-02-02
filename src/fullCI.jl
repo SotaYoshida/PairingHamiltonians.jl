@@ -143,7 +143,7 @@ function write_Exact_wf_hdf5(evec, Norb, Nocc, gval)
 end
 
 """
-    _main_FCI(Hamil_mat, dim_basis, Norb, Nocc, gval, save_Exact_wf, to, debug_mode=0; return_only_E0=true)
+    FCI(Hamil_mat, dim_basis, Norb, Nocc, gval, save_Exact_wf, to, debug_mode=0; return_only_E0=true)
 
 Main function to compute the ground state energy with the full CI method.
 If the system size is small, the Hamiltonian matrix is explicitly constructed and diagonalized using the `eigen` function in LinearAlgebra.jl.
@@ -160,7 +160,7 @@ If the system size is large, the Hamiltonian matrix is sparsely represented and 
 - `debug_mode`: the level of debug information
 - `return_only_E0`: If `true`, return only the ground state energy, otherwise return the eigenvalues and eigenvectors
 """
-function _main_FCI(Hamil_mat, dim_basis, Norb, Nocc, gval, save_Exact_wf, to, debug_mode=0; return_only_E0=true)
+function FCI(Hamil_mat, dim_basis, Norb, Nocc, gval, save_Exact_wf, to, debug_mode=0; return_only_E0=true)
     sparce_rep = (typeof(Hamil_mat) != Matrix{Float64})
     if !sparce_rep
         @timeit to "solver: eigen" evals, evecs = eigen(Hamil_mat)

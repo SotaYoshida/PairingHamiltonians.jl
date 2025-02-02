@@ -76,8 +76,9 @@ function run_test(;debug_mode=0)
             if method == "Full-CI(2-fold)" && write_wf
                 tf_write_wf = true
             end
-            @timeit to "$method" Eret = main_pairHamil(to;Norb_in=Norb, Nocc_in=Nocc, gval=gval, 
-                                                      debug_mode=debug_mode, solver=method,  save_Exact_wf=tf_write_wf)
+            @timeit to "$method" Eret = main_pairHamil(Norb_in=Norb, Nocc_in=Nocc, gval=gval, 
+                                                      debug_mode=debug_mode, solver=method,  save_Exact_wf=tf_write_wf,
+                                                      to_in=to)
             for key in keys(Eret)
                 if !haskey(data, key)
                     data[key] = Float64[]
@@ -91,37 +92,26 @@ function run_test(;debug_mode=0)
 
     show(to, allocations=true, compact=true); println("")
 end
-run_test()
+#run_test()
 
 
-function for_develop_a_method()
-    methods = ["Full-CI(2-fold)", "HF", "BCS"]
-
-    methods = ["Full-CI(2-fold)", "HF", "BCS", "CCD"]
+function for_developing_a_method()
+    methods = ["Full-CI(2-fold)", "HF", "BCS", "CCD" , "IMSRG(2)"]
 
     Norb = 20; Nocc = 10 
-    #Norb = 8; Nocc = 4
-    #Norb = 12; Nocc = 6
 
     debug_mode = 0
+    gvals = [0.33]
 
     to = TimerOutput()
-    gvals = [0.65]
-    #gvals = collect(-0.85:0.025:0.85)
-    #gvals = collect(-2.0:0.01:2.0)
-    #gvals = [1.0, 100.0]
-
     for gval in gvals
         println("gval = $gval")
         for method in methods
-            tf = false 
-            if method == "Full-CI(2-fold)" && Norb <= 20
-                tf = true
-            end
-            @timeit to "$method" Eret = main_pairHamil(to;Norb_in=Norb, Nocc_in=Nocc, gval=gval,
-                                                       debug_mode=debug_mode, solver=method, save_Exact_wf=tf)
+            @timeit to "$method" Eret = main_pairHamil(;Norb_in=Norb, Nocc_in=Nocc, gval=gval,
+                                                       debug_mode=debug_mode, solver=method, save_Exact_wf=false,
+                                                       to_in=to)
         end
     end
     show(to, allocations=true, compact=true); println("")
 end
-#for_develop_a_method( )
+for_developing_a_method( )

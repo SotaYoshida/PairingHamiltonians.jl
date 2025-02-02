@@ -20,8 +20,8 @@ makedocs(;
             "Contributing to PairingHamiltonian" => "contributing.md",
             "Hamiltonian" => "hamiltonian.md",
             "Many-body methods" => [
-                "Full-CI" => "fullCI.md",
-                "HartreeFock" => "hartreefock.md",
+                "Full CI" => "fullCI.md",
+                "Hartree-Fock" => "hartreefock.md",
                 "MBPT" => "mbpt.md",
                 "BCS" => "bcs.md",                
                 "Coupled Cluster" => "coupledcluster.md",

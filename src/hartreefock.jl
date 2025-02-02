@@ -4,6 +4,9 @@ struct Hamiltonian_NormalOrdered
     Gamma::Vector{Float64}
 end
 
+"""
+
+"""
 function eval_EHF(h1b, gval, rho, Nocc)
     Nq = size(h1b, 1)
     e1b = e2b = 0.0
@@ -50,6 +53,8 @@ function check_rho(rho, Nocc)
 end
 
 """
+    define_holes_particles(F, Nocc)
+
 Function to return the indices of the holes, which are below the Fermi level, and the particles, which are above the Fermi level.
 """
 function define_holes_particles(F, Nocc)
@@ -59,9 +64,6 @@ function define_holes_particles(F, Nocc)
     return holes, particles
 end
 
-"""
-To get normal ordered Hamiltonian upto two-body level.
-"""
 function normal_ordering(h1b, h2b, holes, particles, gval)
     Nq = size(h1b, 1)
 
@@ -97,9 +99,23 @@ function normal_ordering(h1b, h2b, holes, particles, gval)
 end
 
 """
-Compute the energies of the Hamiltonian by the Hartree-Fock method and perturbation theory.
+    HF(Nocc, h1b, h2b, gval, to, debug_mode=0; itnum_max=100, tol=1e-9)
+
+Main function to compute the energies of the Hamiltonian by the Hartree-Fock method and perturbation theory.
+
+# Arguments
+- `Nocc::Int64`: Number of occupied orbitals.
+- `h1b::Matrix{Float64,2}`: One-body Hamiltonian.
+- `h2b::Vector{Float64,1}`: Two-body Hamiltonian flattened. This will be used only for the normal ordering.
+- `gval::Float64`: Interaction strength.
+- `to::TimeOutput`: TimeOutput object to measure the time.
+
+# Optional arguments
+- `debug_mode::Int64(0)`: If 1, print the energies at each iteration.
+- `itnum_max::Int64(100)`: Maximum number of iterations.
+- `tol::Float64(1e-9)`: Tolerance to stop the iteration.
 """
-function _main_HF(Nocc, h1b, h2b, gval, to, debug_mode=0; return_only_E0=true, itnum_max=30, tol=1e-9)
+function HF(Nocc, h1b, h2b, gval, to, debug_mode=0; itnum_max=100, tol=1e-9)
     Nq = size(h1b, 1)
     F = zeros(Float64, Nq, Nq)
     rho = zeros(Float64, Nq, Nq)

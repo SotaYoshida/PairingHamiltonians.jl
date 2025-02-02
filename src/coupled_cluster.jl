@@ -31,7 +31,7 @@ function unhash_key4(key::UInt64)
 end
 
 """
-    _main_CC(F, gval, Nocc, to, debug_mode; itnum=100, tol=1e-9, mix_ratio=0.25)
+    CCD(F, gval, Nocc, to, debug_mode; itnum=100, tol=1e-9, mix_ratio=0.25)
 
 Main function to calculate the ground state energy of the pairing Hamiltonian using the coupled cluster method.
 Since the Hamiltonian is the pairing model, we don't need to consider 1p1h excitations, CCD instead of CCSD, etc.
@@ -52,7 +52,7 @@ Since the Hamiltonian is the pairing model, we don't need to consider 1p1h excit
 - [Shavitt, I., & Bartlett, R. J. (2009). Many-body methods in chemistry and physics: MBPT and coupled-cluster theory. Cambridge University Press.](https://www.cambridge.org/jp/academic/subjects/chemistry/physical-chemistry/many-body-methods-chemistry-and-physics-mbpt-and-coupled-cluster-theory)
 - [Justin G. Lietz, Samuel Novario, Gustav R. Jansen, Gaute Hagen & Morten Hjorth-Jensen, Computational Nuclear Physics and Post Hartree-Fock Methods](https://link.springer.com/chapter/10.1007/978-3-319-53336-0_8), part of the book series: [Lecture Notes in Physics ((LNP,volume 936))](https://link.springer.com/book/10.1007/978-3-319-53336-0)
 """
-function _main_CC(F, gval, Nocc, to, debug_mode; itnum=100, tol=1e-9, mix_ratio=0.25)
+function CCD(F, gval, Nocc, to, debug_mode; itnum=100, tol=1e-9, mix_ratio=0.25)
     dim = size(F, 1)
     dim_p = dim - Nocc
     dim_h = Nocc

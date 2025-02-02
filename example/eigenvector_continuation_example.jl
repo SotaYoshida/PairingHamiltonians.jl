@@ -17,7 +17,6 @@ function plot_ec(sets, labels, results, Norb, Nocc)
     for idx = 1:length(sets)
         label = labels[idx]
         Data = results[idx]
-
         x = sort([gval for gval in keys(Data)])
         y = zeros(Float64, length(x))
         ydiff = zeros(Float64, length(x))
@@ -38,6 +37,15 @@ end
 function example_EC()
     Norb = 8
     Nocc = 4
+
+    # Preparing snapshots of FCI wavefunctions
+    gvals_target = collect(-2.0:0.1:2.0)
+    for gval in gvals_target
+            main_pairHamil(;Norb_in=Norb, Nocc_in=Nocc, gval=gval,
+                            solver="Full-CI(2-fold)", save_Exact_wf=true)
+    end
+
+    # Trying Eigenvector Continuation
     set_A = collect(-1.0:0.5:0.0)
     set_B = collect(-1.0:1.0:1.0)
     set_C = collect(0.0:0.5:1.0)
@@ -47,7 +55,7 @@ function example_EC()
 
     results = [ ]
     for target_set in sets
-        data = main_EC_from_FCI(Norb, Nocc; gvals_specified=target_set)
+        data = EC_from_FCI(Norb, Nocc; gvals_specified=target_set)
         push!(results, data)
     end
 

@@ -33,8 +33,6 @@ function main()
     Norb = 8; Nocc = 4
     fns = glob("eigenstates_fullCI/eigenstate_Norb$(Norb)_Nocc$(Nocc)_g*.h5")
 
-    fns = ["eigenstates_fullCI/eigenstate_Norb8_Nocc4_g0.33.h5"]
-
     Data = Dict{Float64, Vector{Float64}}()
     for fn in fns
         h5open(fn, "r") do file
@@ -45,7 +43,7 @@ function main()
         end
     end
 
-   # plot_overlap(Data)
+   plot_overlap(Data)
 
 end
 main()

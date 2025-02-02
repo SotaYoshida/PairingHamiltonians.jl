@@ -20,6 +20,6 @@ include("mbpt.jl")
 include("coupled_cluster.jl")
 include("imsrg.jl")
 include("eigenvector_continuation.jl")
-export main_EC_from_FCI
+export EC_from_FCI
 
 end # module ParingHamiltonian
