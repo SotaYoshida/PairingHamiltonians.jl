@@ -1,7 +1,7 @@
 using Documenter
-using PairingHamiltonian
-#include("../src/PairingHamiltonian.jl")
-#push!(LOAD_PATH,"../src/")
+#using PairingHamiltonian
+include("../src/PairingHamiltonian.jl")
+push!(LOAD_PATH,"../src/")
 
 DocMeta.setdocmeta!(PairingHamiltonian, :DocTestSetup, :(using PairingHamiltonian); recursive=true)
 makedocs(;
@@ -16,8 +16,18 @@ makedocs(;
                                 ),
          warnonly = [:missing_docs],
          pages=[
-             "Home" => "index.md",
-             "Contributing to PairingHamiltonian" => "contributing.md",
+            "Home" => "index.md",
+            "Contributing to PairingHamiltonian" => "contributing.md",
+            "Hamiltonian" => "hamiltonian.md",
+            "Many-body methods" => [
+                "Full-CI" => "fullCI.md",
+                "HartreeFock" => "hartreefock.md",
+                "MBPT" => "mbpt.md",
+                "BCS" => "bcs.md",                
+                "Coupled Cluster" => "coupledcluster.md",
+                "IM-SRG" => "imsrg.md",
+                "Eigenvector Continuation" => "eigenvectorcontinuation.md",
+            ]
     ],
 )
 
