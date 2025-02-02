@@ -5,7 +5,18 @@ struct Hamiltonian_NormalOrdered
 end
 
 """
+    eval_EHF(h1b, gval, rho, Nocc)
 
+Function to evaluate the energy of the Hamiltonian in the Hartree-Fock method.
+
+```math
+\\begin{align}
+E &= E_{1b} + E_{2b} \\nonumber \\\\
+E_{1b} & = \\sum_{i \\leq F} \\sum_{\\alpha\\beta} C^T_{i \\alpha} C_{i \\beta} \\langle \\alpha | h | \\beta \\rangle =
+\\sum_{\\alpha \\beta} \\rho_{\\alpha \\beta} \\langle \\alpha | h | \\beta \\rangle\\nonumber  \\\\
+E_{2b} &= \\frac{1}{2}\\sum_{\\alpha\\beta\\gamma\\delta} \\rho_{\\alpha \\beta} \\rho_{\\gamma \\delta} \\langle \\alpha \\gamma | v | \\beta \\delta \\rangle \\nonumber 
+\\end{align}
+```
 """
 function eval_EHF(h1b, gval, rho, Nocc)
     Nq = size(h1b, 1)
@@ -22,6 +33,15 @@ function eval_EHF(h1b, gval, rho, Nocc)
     return e1b, e2b, EHF
 end
 
+"""
+    eval_Fock!(F, rho, h1b, Nocc, gval)
+
+Function to evaluate the Fock matrix destructively.
+
+```math
+F_{\\alpha\\beta} = \\langle \\alpha | h | \\beta \\rangle + \\sum_{\\gamma \\delta} \\rho_{\\gamma \\delta} \\langle \\alpha \\gamma | v | \\beta \\delta \\rangle
+```
+"""
 function eval_Fock!(F, rho, h1b, Nocc, gval)
     Nq = size(h1b, 1)
     F .= 0.0
@@ -41,6 +61,15 @@ function eval_Fock!(F, rho, h1b, Nocc, gval)
     return nothing
 end
 
+"""
+    eval_rho!(rho, U, Nocc)
+
+Update the density matrix with the coefficient matrix.
+
+```math
+\\rho_{\\alpha\\beta} = \\sum_{i \\leq F} C^T_{i \\alpha} C_{i \\beta}
+```
+"""
 function eval_rho!(rho, U, Nocc)
     tU = @view U[:,1:Nocc]
     BLAS.gemm!('N', 'T', 1.0, tU, tU, 0.0, rho)

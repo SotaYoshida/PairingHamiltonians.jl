@@ -41,7 +41,7 @@ function example_EC()
     # Preparing snapshots of FCI wavefunctions
     gvals_target = collect(-2.0:0.1:2.0)
     for gval in gvals_target
-            main_pairHamil(;Norb_in=Norb, Nocc_in=Nocc, gval=gval,
+        Pairing_Hamiltonian(;Norb_in=Norb, Nocc_in=Nocc, gval=gval,
                             solver="Full-CI(2-fold)", save_Exact_wf=true)
     end
 
