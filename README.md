@@ -1,6 +1,6 @@
 # PairingHamiltonian.jl
 
-![](logo/logo_PairingHamiltonian.png)
+<img src="https://github.com/SotaYoshida/PairingHamiltonian.jl/blob/main/logo/logo_PairingHamiltonian.png?raw=true" width=60%>
 
 Julia package solving pairing hamiltonian
 
