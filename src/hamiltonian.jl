@@ -32,12 +32,13 @@ function eval_epsilon(Norb::Int, delta_eps::Float64, degenerate::Bool)
 end
 
 """
-Create a list of configurations where n out of N are occupied.
+    prepare_basis(N::Int, n::Int)::Vector{Int}
 
+Create a list of configurations where n out of N are occupied.
 """
 function prepare_basis(N, n)
     basis = Int64[]
-    for i in 1:2^N
+    for i in 0:2^N-1
         if count_ones(i) == n
             push!(basis, i)
         end
@@ -144,14 +145,14 @@ function eval_Hamil(method::String, basis::Vector{Int}, eps::Vector{Float64}, g:
     if occursin("Full-CI", method)
         num_nonzero = 0
         for i = 1:dim
-            psi = int2bitstr(basis[i], Nq)
+            psi = basis[i]
             nkey = hash_key2(i,i)
             if sparce_rep
                 Hamil_mat[nkey] = 0.0
             end
             for p = 1:sum_step:Nq
                 if degenerate 
-                    if psi[p] == '1'
+                    if basis[i] >> (p-1) & 1 == 1
                         if sparce_rep
                             Hamil_mat[nkey] += eps[p] - g
                         else
@@ -161,8 +162,8 @@ function eval_Hamil(method::String, basis::Vector{Int}, eps::Vector{Float64}, g:
                 else # partner should be occupied to gain pairing energy
                     te = 0.0
                     partner = ifelse(p%2==1, p+1, p-1)
-                    occp = (psi[p] == '1')
-                    occpp = (psi[partner] == '1')
+                    occp = psi >> (p-1) & 1 == 1
+                    occpp = psi >> (partner-1) & 1 == 1
                     if occp
                         te += eps[p] 
                     end
@@ -203,31 +204,28 @@ function eval_Hamil(method::String, basis::Vector{Int}, eps::Vector{Float64}, g:
                     end
                 else 
                     # a^†_q a^†_qbar a_pbar a_p 
-                    bitstr_ket = int2bitstr(psi_l, Nq)
-                    bitstr_bra = int2bitstr(psi_r, Nq)
-                    diff_bit_str = int2bitstr(diff_bit, Nq)
-                    for q = 1:sum_step:Nq
+                    for q = 1:sum_step:Nq # q is running over up spins
                         qbar = q + 1
-                        if diff_bit_str[q] == '0' || diff_bit_str[qbar] == '0'
+                        if diff_bit >> (q-1) & 1 == 0 || diff_bit >> (qbar-1) & 1 == 0
+                            continue
+                        end
+                        if psi_r >> (q-1) & 1 == 0 || psi_r >> (qbar-1) & 1 == 0
+                            continue
+                        end
+                        if psi_l >> (q-1) & 1 == 1 || psi_l >> (qbar-1) & 1 == 1
                             continue
                         end
 
-                        if !(bitstr_ket[q] == bitstr_ket[qbar] == '1')
-                            continue
-                        end
-                        if !(bitstr_bra[q] == bitstr_bra[qbar] == '0')
-                            continue
-                        end
-
-                        for p = 1:sum_step:q-2# $q-2  
+                        for p = 1:sum_step:q-2
                             pbar = p + 1
-                            if !(bitstr_ket[p] == bitstr_ket[pbar] == '0')
+                            if psi_r >> (p-1) & 1 == 1 || psi_r >> (pbar-1) & 1 == 1
                                 continue
                             end
-                            if !(bitstr_bra[p] == bitstr_bra[pbar] == '1')
+                            if psi_l >> (p-1) & 1 == 0 || psi_l >> (pbar-1) & 1 == 0
                                 continue
                             end
-                            tmp += -g 
+                            tmp += -g
+                            break
                         end
                     end
                 end
@@ -304,7 +302,7 @@ function Pairing_Hamiltonian(;Norb_in::Int=8, Nocc_in::Int=4, gval::Float64=0.33
     end
 
     # prepare base
-    basis = prepare_basis(Norb, Nocc)
+    @timeit to "prepare_basis" basis = prepare_basis(Norb, Nocc)
     if debug_mode > 1
         println("basis for $Norb, $Nocc:")
         for bit_int in basis

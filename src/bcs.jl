@@ -67,7 +67,7 @@ end
 Update the gap parameter `Delta` iteratively with the following equation:
 
 ```math
-\\Delta^\\mathrm{new} := \\alpha \\Delta^\\mathrm{new} + (1-\\alpha) \\frac{g}{4} \\sum_{\\alpha} \\frac{\\Delta}{\\sqrt{(\\epsilon'_a - \\lambda)^2 + \\Delta^2}}
+\\Delta^\\mathrm{new} := \\alpha \\Delta + (1-\\alpha) \\frac{g}{4} \\sum_{\\alpha} \\frac{\\Delta}{\\sqrt{(\\epsilon'_a - \\lambda)^2 + \\Delta^2}}
 ```
 
 # Arguments

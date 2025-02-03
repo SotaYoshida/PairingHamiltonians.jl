@@ -36,11 +36,11 @@ function plot_ec(sets, labels, results, Norb, Nocc)
 end
 
 function example_EC()
-    Norb = 8
-    Nocc = 4
+    Norb = 4
+    Nocc = 2
 
     # Preparing snapshots of FCI wavefunctions
-    gvals_target = collect(-2.0:0.1:2.0)
+    gvals_target = collect(-1.2:0.1:1.2)
     for gval in gvals_target
         Pairing_Hamiltonian(;Norb_in=Norb, Nocc_in=Nocc, gval=gval,
                             solver="Full-CI(2-fold)", save_Exact_wf=true)

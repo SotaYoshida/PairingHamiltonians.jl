@@ -60,12 +60,12 @@ function plot_Es(methods, x, data, Norb, Nocc)
 end
 
 function run_test(;debug_mode=0)
-    gvals = collect(-0.5:0.05:0.5)
+    gvals = collect(-0.5:0.1:0.5)
 
     methods = ["Full-CI(2-fold)", "HF", "BCS", "CCD", "IMSRG(2)"]
     methods_plot = [ "HF", "BCS", "MBPT2", "MBPT3", "CCD", "IMSRG(2)", "Full-CI(2-fold)"]
 
-    Norb = 8; Nocc = 4 
+    Norb = 4; Nocc = 2
     write_wf = !true 
 
     data = Dict{String, Vector{Float64}}()
@@ -98,7 +98,6 @@ run_test()
 
 function for_developing_a_method()
     methods = ["Full-CI(2-fold)", "HF", "BCS", "CCD" , "IMSRG(2)"]
-
     Norb = 20; Nocc = 10 
 
     debug_mode = 0
