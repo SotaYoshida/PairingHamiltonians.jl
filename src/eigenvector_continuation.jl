@@ -118,6 +118,7 @@ function EC_from_FCI(Norb_in, Nocc_in;
         print(@sprintf("g = %6.2f, E_ec = %12.5f", g, E_ec))
         # comparing to the exact solution if available
         fn_exact = target_dirs * "/eigenstate_Norb$(Norb_in)_Nocc$(Nocc_in)_g$(g).h5"
+        E_exact = NaN
         if isfile(fn_exact)
             _, __, ___, evec_exact = read_snapshot(fn_exact)
             operate_H_on_vec!(Hv, Hamil_target, evec_exact)
