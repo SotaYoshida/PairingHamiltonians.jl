@@ -1,8 +1,11 @@
 # PairingHamiltonian.jl
 
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://SotaYoshida.github.io/PairingHamiltonian.jl/dev)
+[![Build Status](https://github.com/SotaYoshida/PairingHamiltonian.jl/actions/workflows/CI.yml/badge.svg?branch=dev)](https://github.com/SotaYoshida/PairingHamiltonian.jl/actions/workflows/CI.yml/badge.svg?branch=dev)
+
 <img src="https://github.com/SotaYoshida/PairingHamiltonian.jl/blob/main/logo/logo_PairingHamiltonian.png?raw=true" width=60%>
 
-Julia package solving pairing hamiltonian
+Julia package to solve pairing Hamiltonian.
 
 The package covers the following methods:
 

@@ -1,8 +1,9 @@
-#using PairingHamiltonian
+# using released version
+using PairingHamiltonian
 
-# for development
-include("src/PairingHamiltonian.jl")
-using .PairingHamiltonian
+# using a local version for development
+#include("src/PairingHamiltonian.jl")
+#using .PairingHamiltonian
 
 using Glob
 using HDF5
@@ -21,9 +22,9 @@ function plot_overlap(Data)
             mesh[i,j] = overlap
         end
     end
-    p = heatmap(x, x, mesh, c=:viridis,
-                aspect_ratio=1, xlims=(-2,2), ylims=(-2,2),
-                xlabel=L"g", ylabel=L"g'", title="|<ψ(g)|ψ(g')>|")
+    p = heatmap(x, x, mesh, c=:magma,
+        aspect_ratio=1, xlims=(-2,2), ylims=(-2,2),
+        xlabel=L"g", ylabel=L"g'", title=L"|  \langle \psi(g)|\psi(g') \rangle |")
     savefig(p, "overlap.pdf")
     display(p)
 
@@ -32,6 +33,11 @@ end
 function main()
     Norb = 8; Nocc = 4
     fns = glob("eigenstates_fullCI/eigenstate_Norb$(Norb)_Nocc$(Nocc)_g*.h5")
+
+    if length(fns) == 0
+        println("No files found")
+        return
+    end
 
     Data = Dict{Float64, Vector{Float64}}()
     for fn in fns
