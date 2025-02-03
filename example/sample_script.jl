@@ -60,7 +60,7 @@ function plot_Es(methods, x, data, Norb, Nocc)
 end
 
 function run_test(;debug_mode=0)
-    gvals = collect(-0.85:0.01:0.85)
+    gvals = collect(-0.5:0.05:0.5)
 
     methods = ["Full-CI(2-fold)", "HF", "BCS", "CCD", "IMSRG(2)"]
     methods_plot = [ "HF", "BCS", "MBPT2", "MBPT3", "CCD", "IMSRG(2)", "Full-CI(2-fold)"]

@@ -1,7 +1,8 @@
 using Documenter
-#using PairingHamiltonian
-include("../src/PairingHamiltonian.jl")
-push!(LOAD_PATH,"../src/")
+using PairingHamiltonian
+# For development in local machine
+# include("../src/PairingHamiltonian.jl")
+# push!(LOAD_PATH,"../src/")
 
 DocMeta.setdocmeta!(PairingHamiltonian, :DocTestSetup, :(using PairingHamiltonian); recursive=true)
 makedocs(;

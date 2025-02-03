@@ -34,6 +34,11 @@ function main()
     Norb = 8; Nocc = 4
     fns = glob("eigenstates_fullCI/eigenstate_Norb$(Norb)_Nocc$(Nocc)_g*.h5")
 
+    if length(fns) == 0
+        println("No files found")
+        return
+    end
+
     Data = Dict{Float64, Vector{Float64}}()
     for fn in fns
         h5open(fn, "r") do file
