@@ -3,9 +3,7 @@ on:
   pull_request:
     branches:
       - main
-      - develop
     tags: '*'
-    exclude: "log_sample_script.txt"
 concurrency:
   # Skip intermediate builds: always.
   # Cancel intermediate builds: only if it is a pull request build.
@@ -32,7 +30,8 @@ jobs:
       - name: "Run tests"
         run: |
             julia --project -e 'import Pkg; Pkg.test()'
-   docs:
+            
+  docs:
     name: Documentation
     runs-on: ubuntu-latest
     steps:
