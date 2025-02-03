@@ -9,12 +9,14 @@ The package covers the following methods:
 - Full Configuration Interaction (FCI)/Exact Diagonalization
 - Hartree-Fock (HF)
 - Bardeen-Cooper-Schrieffer (BCS)
-- Many-Body Perturbation Theory (MBPT) a.k.a. Moeller-Plesset method
+- Many-Body Perturbation Theory (MBPT) a.k.a.  Møller–Plesset method
 - Coupled Cluster (CC) 
 - In-Medium Similarity Renormalization Group (IM-SRG)
 - Eigenvector Continuation (EC)
 
 ## Installation
+
+Note: This package is still under development. The following instructions are not working yet.
 
 Assuming you have Julia installed, you can install the package by running the following commands in the Julia REPL:
 ```julia

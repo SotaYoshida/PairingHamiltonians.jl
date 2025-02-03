@@ -9,7 +9,7 @@ One should consider to run a script using multiple threads to speed up the calcu
 julia -t 12 path_to_script.jl
 ```
 
-Some functions in the package are already parallelized, but it may be still possible to improve the performance to make it competitive with other methods.
+Some functions in the package are already parallelized, but it may be still insufficient for large systems.
 
 ```@autodocs
 Modules = [PairingHamiltonian]
