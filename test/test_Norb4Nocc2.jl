@@ -2,8 +2,8 @@ using PairingHamiltonian
 using Test
 
 function run_test()
-    Norb = 8; Nocc = 4 
-    gvals = collect(-0.5:0.05:0.5)
+    Norb = 4; Nocc = 2
+    gvals = collect(-0.5:0.1:0.5)
     methods = ["Full-CI(2-fold)", "HF", "BCS", "CCD", "IMSRG(2)"]
 
     for gval in gvals
