@@ -158,7 +158,10 @@ function show_status(s, Hamiltonian, PT2, eta_1b, eta_2b)
 end
 
 """
-Evaluating ``A_{i\\bar{j}k\\bar{l}} = - A_{ijkl}``
+    eval_2b_ph_trans!(eta, eta_ph, Γ, Γ_ph, idx2b, kets)
+
+Evaluating ``A_{i\\bar{j}k\\bar{l}} = - A_{ijkl}`` destructively.
+Those will be used for making the 2-body part of the flow equation faster. 
 """
 function eval_2b_ph_trans!(eta, eta_ph, Γ, Γ_ph, idx2b, kets)
     dim = size(eta, 1)
@@ -200,6 +203,28 @@ function prepare_idx_kets_ph(kets)
     return idx_kets_ph
 end
 
+"""
+    eval_derivatives!(dH, eta_1b, eta_2b, f, Γ, idx2b, coppy_matrices, kets, kets_ph,                     
+                           holes, particles, holes_2b, particles_2b, to, debug_mode)
+
+To evaluate the derivatives of the Hamiltonian operator, we need to evaluate the following terms:
+
+```math
+\\begin{align}
+\\frac{dE}{ds} &= \\sum_{ab} (n_a-n_b) \\eta^{(1)}_{ab} f_{ba} 
++ \\frac{1}{2} \\sum_{abcd} \\eta^{(2)}_{abcd} \\Gamma_{cdab} n_an_b \\bar{n}_c \\bar{n}_d \\nonumber \\\\
+\\frac{df_{pq}}{ds} &= \\sum_{a} (1+P_{pq}) \\eta^{(1)}_{pa} f_{aq} 
++ \\sum_{ab} (n_a-n_b) (\\eta^{(1)}_{ab} \\Gamma_{bpaq} - f_{ab} \\eta^{(2)}_{bpaq})  \\nonumber \\\\
+& + \\frac{1}{2} \\sum_{abc} (n_an_b\\bar{n}_c + \\bar{n}_a \\bar{n}_b n_c) (1+P_{pq}) \\eta^{(2)}_{cpab} \\Gamma_{abcq} \\nonumber \\\\
+\\frac{d\\Gamma_{pqrs}}{ds} &= \\sum_{a} 
+\\left\\{ (1-P_{pq}) (\\eta^{(1)}_{pa} \\Gamma_{aqrs} - f_{pa} \\eta^{(2)}_{aqrs}) -(1-P_{rs}) (\\eta^{(1)}_{ar} \\Gamma_{pqas} - f_{ar} \\eta^{(2)}_{pqas}) \\right\\} \\nonumber \\\\ 
+& + \\frac{1}{2} \\sum_{ab} (1-n_a-n_b) (\\eta^{(2)}_{pqab} \\Gamma_{abrs} - \\Gamma_{pqab} \\eta^{(2)}_{abrs})\\nonumber  \\\\
+& - \\sum_{ab} (n_a - n_b) (1-P_{pq})(1-P_{rs}) \\eta^{(2)}_{bqas} \\Gamma_{apbr} \\nonumber 
+\\end{align}
+```
+
+where ``P_{pq}`` is the permutation operator, and ``n_a`` is the occupation number of the orbital ``a``.
+"""
 function eval_derivatives!(dH::Operator, eta_1b, eta_2b, f, Γ, idx2b, coppy_matrices, kets, kets_ph,                     
                            holes, particles, holes_2b, particles_2b, to, debug_mode)
     dim1b = size(f, 1)
@@ -480,8 +505,7 @@ function making_matrices_for_222ph(Γ, kets, holes)
 end
 
 """
-    IMSRG(HNO, holes, particles, gval, Nocc, to, debug_mode;
-                smax = 15.0, tol_eta=1.e-4, ds=1.e-2)
+    IMSRG(HNO, holes, particles, gval, Nocc, to, debug_mode; smax = 15.0, tol_eta=1.e-4, ds=1.e-2)
 
 Main function to perform the IMSRG calculation.
 
@@ -498,6 +522,9 @@ Main function to perform the IMSRG calculation.
 - `smax::Float64`: maximum value of the flow parameter
 - `tol_eta::Float64`: tolerance of the generator
 - `ds::Float64`: step size of the flow parameter
+
+# References
+- [Heiko Hergert, Scott K. Bogner, Justin G. Lietz, Titus D. Morris, Samuel J. Novario, Nathan M. Parzuchowski & Fei Yuan: In-Medium Similarity Renormalization Group Approach to the Nuclear Many-Body Problem](https://link.springer.com/chapter/10.1007/978-3-319-53336-0_10), part of the book series: [Lecture Notes in Physics ((LNP,volume 936))](https://link.springer.com/book/10.1007/978-3-319-53336-0)
 """
 function IMSRG(HNO, holes, particles, gval, Nocc, to, debug_mode;
                     smax = 15.0, tol_eta=1.e-4, ds=1.e-2)
