@@ -1,8 +1,9 @@
-#using PairingHamiltonian
+# using released version
+using PairingHamiltonian
 
-# for development
-include("src/PairingHamiltonian.jl")
-using .PairingHamiltonian
+# using a local version for development
+#include("src/PairingHamiltonian.jl")
+#using .PairingHamiltonian
 
 using Plots
 using TimerOutputs
@@ -55,7 +56,7 @@ function plot_Es(methods, x, data, Norb, Nocc)
     xlabel!(p, L"g")
     ylabel!(p, "Energy difference from Full-CI")
     savefig(p, "Diff_Energies_Norb$(Norb)_Nocc$(Nocc).pdf")
-
+    return true
 end
 
 function run_test(;debug_mode=0)
@@ -91,9 +92,9 @@ function run_test(;debug_mode=0)
     @timeit to "plot" plot_Es(methods_plot, gvals, data, Norb, Nocc)
 
     show(to, allocations=true, compact=true); println("")
+    return true
 end
-#run_test()
-
+run_test()
 
 function for_developing_a_method()
     methods = ["Full-CI(2-fold)", "HF", "BCS", "CCD" , "IMSRG(2)"]
@@ -116,4 +117,4 @@ function for_developing_a_method()
     end
     show(to, allocations=true, compact=true); println("")
 end
-for_developing_a_method( )
+# for_developing_a_method( )
