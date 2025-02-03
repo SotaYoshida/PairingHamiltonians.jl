@@ -147,7 +147,7 @@ end
 Calculate the ground state energy of the BCS Hamiltonian from the Bogoliubov coefficients `vs` and `us`:
 
 ```math
-E_\\mathrm{BCS} = \\sum_{\\alpha} \\epsilon'_a  v^2_a - \\frac{\\Delta^2}{g}
+E_\\mathrm{BCS} = \\sum_{a} \\left( \\epsilon'_a  v^2_a - \\frac{g v^4_a}{2} \\right)
 ```
 """
 function E_BCS_from_uv(epsilon, epsilon_p, vs, Delta, lambda, gval, debug_mode)
