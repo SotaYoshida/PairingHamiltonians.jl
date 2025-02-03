@@ -21,8 +21,8 @@ This package is designed to help a student (like old me) to dive into the many-b
 I would be very happy if this package provides a good starting point for students to learn the many-body methods in nuclear physics, and to develop something new.
 
 The package itself is not covering quantum computing methods, but this can be used as a reference to play with the quantum computing methods.
-Regarding the quantum computing methods, I have developed and opened some materials to solve the pairing Hamiltonian with quantum algorithms, VQE on PennyLane/Qiskit/Pytket, Hadamard test, QPE, Quantum Lanczos, and so on.
-Those materials are available through the following repository: [Lecture_SummerSchool2025](https://github.com/SotaYoshida/Lecture_SummerSchool2025)
+Regarding the quantum computing methods, I have developed and opened some materials to solve the pairing Hamiltonian with quantum algorithms, VQE, Hadamard test, QPE, Quantum Lanczos with either PennyLane/Qiskit/Pytket.
+Those materials will be available through the following repository: [Lecture_SummerSchool2025](https://github.com/SotaYoshida/Lecture_SummerSchool2025)
 This is for the summer school in Japan, so the materials are written in Japanese, but I am planning to make an English version in the future.
 
 I have been developing another Julia package, [NuclearToolkit.jl](https://github.com/SotaYoshida/NuclearToolkit.jl) covering chiral EFT potentials, and methods like ones in this package.
