@@ -19,8 +19,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - {version: '1.10',   os: ubuntu-latest,  payload: serial}
-          - {version: '1.10',   os: macOS-latest,   payload: serial}
+          - {version: '1.11',   os: ubuntu-latest,  payload: serial}
+          - {version: '1.11',   os: macOS-latest,   payload: serial}
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
@@ -39,7 +39,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
         with:
-          version: '1.10'
+          version: '1.11'
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-docdeploy@v1
         env:
