@@ -1,9 +1,9 @@
-# PairingHamiltonian.jl
+# PairingHamiltonians.jl
 
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://SotaYoshida.github.io/PairingHamiltonian.jl/dev)
-[![Build Status](https://github.com/SotaYoshida/PairingHamiltonian.jl/actions/workflows/CI.yml/badge.svg?branch=dev)](https://github.com/SotaYoshida/PairingHamiltonian.jl/actions/workflows/CI.yml/badge.svg?branch=dev)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://SotaYoshida.github.io/PairingHamiltonians.jl/dev)
+[![Build Status](https://github.com/SotaYoshida/PairingHamiltonians.jl/actions/workflows/CI.yml/badge.svg?branch=dev)](https://github.com/SotaYoshida/PairingHamiltonians.jl/actions/workflows/CI.yml/badge.svg?branch=dev)
 
-<img src="https://github.com/SotaYoshida/PairingHamiltonian.jl/blob/main/logo/logo_PairingHamiltonian.png?raw=true" width=60%>
+<img src="https://github.com/SotaYoshida/PairingHamiltonians.jl/blob/main/logo/logo_PairingHamiltonians.png?raw=true" width=60%>
 
 Julia package to solve pairing Hamiltonian.
 
@@ -23,7 +23,7 @@ Note: This package is still under development. The following instructions are no
 
 Assuming you have Julia installed, you can install the package by running the following commands in the Julia REPL:
 ```julia
-] add PairingHamiltonian
+] add PairingHamiltonians
 ``` 
 
 ## How to start

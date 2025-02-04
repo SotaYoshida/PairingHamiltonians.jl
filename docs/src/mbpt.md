@@ -6,7 +6,7 @@ Users do not have to specify "MBPT2" or "MBPT3" in the input file, as the packag
 
 
 ```@autodocs
-Modules = [PairingHamiltonian]
+Modules = [PairingHamiltonians]
 Pages = ["mbpt.jl"]
 ``` 
 

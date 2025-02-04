@@ -67,9 +67,9 @@ jobs:
       - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
-            using PairingHamiltonian
-            DocMeta.setdocmeta!(PairingHamiltonian, :DocTestSetup, :(using PairingHamiltonian); recursive=true)
-            doctest(PairingHamiltonian)'
+            using PairingHamiltonians
+            DocMeta.setdocmeta!(PairingHamiltonians, :DocTestSetup, :(using PairingHamiltonians); recursive=true)
+            doctest(PairingHamiltonians)'
 
 
 

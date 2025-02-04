@@ -1,4 +1,4 @@
-# Contributing to PairingHamiltonian.jl
+# Contributing to PairingHamiltonians.jl
 
 Thank you for considering contributing to this package.
 

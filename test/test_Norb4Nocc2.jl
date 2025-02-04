@@ -1,4 +1,4 @@
-using PairingHamiltonian
+using PairingHamiltonians
 using Test
 
 function run_test()
@@ -9,7 +9,7 @@ function run_test()
     for gval in gvals
         println("--------------- gval = $gval ------------")        
         for method in methods             
-            Eret = Pairing_Hamiltonian(Norb_in=Norb, Nocc_in=Nocc, gval=gval, solver=method)
+            Eret = PairingHamiltonian(Norb_in=Norb, Nocc_in=Nocc, gval=gval, solver=method)
         end
         println("\n\n")
     end

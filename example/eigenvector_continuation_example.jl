@@ -1,9 +1,9 @@
 # using released version
-using PairingHamiltonian
+using PairingHamiltonians
 
 # using a local version for development
-#include("src/PairingHamiltonian.jl")
-#using .PairingHamiltonian
+#include("src/PairingHamiltonians.jl")
+#using .PairingHamiltonians
 
 using Plots
 using LaTeXStrings
@@ -42,7 +42,7 @@ function example_EC()
     # Preparing snapshots of FCI wavefunctions
     gvals_target = collect(-1.2:0.1:1.2)
     for gval in gvals_target
-        Pairing_Hamiltonian(;Norb_in=Norb, Nocc_in=Nocc, gval=gval,
+        PairingHamiltonian(;Norb_in=Norb, Nocc_in=Nocc, gval=gval,
                             solver="Full-CI(2-fold)", save_Exact_wf=true)
     end
 

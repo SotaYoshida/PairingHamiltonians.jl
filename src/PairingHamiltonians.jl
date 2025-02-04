@@ -1,4 +1,4 @@
-module PairingHamiltonian
+module PairingHamiltonians
 
 using Base.Threads
 using Combinatorics
@@ -11,7 +11,7 @@ using StatsBase
 using TimerOutputs
 
 include("hamiltonian.jl")
-export Pairing_Hamiltonian
+export PairingHamiltonian
 export eval_Hamil
 include("fullCI.jl")
 include("bcs.jl")

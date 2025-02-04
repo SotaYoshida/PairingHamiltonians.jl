@@ -1,4 +1,4 @@
-name = "PairingHamiltonian"
+name = "PairingHamiltonians"
 uuid = "0e39546d-869d-4f2a-bc21-e92ab20deea1"
 authors = ["SotaYoshida <syoshida@cc.utsunomiya-u.ac.jp>"]
 version = "0.1.0"
