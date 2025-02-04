@@ -266,7 +266,7 @@ function eval_h1_h2(Nq, eps::Vector{Float64}, g::Float64, sum_step)
 end
 
 """
-    Pairing_Hamiltonian(to; Norb_in::Int=8, Nocc_in::Int=4, gval::Float64=0.33, delta_eps::Float64=1.0,
+    PairingHamiltonian(to; Norb_in::Int=8, Nocc_in::Int=4, gval::Float64=0.33, delta_eps::Float64=1.0,
                         debug_mode::Int=0, solver::String="FCI(2-fold)", save_Exact_wf::Bool=false)
 
 Main function to evaluate the ground state energy of the pairing Hamiltonian.
@@ -281,7 +281,7 @@ Main function to evaluate the ground state energy of the pairing Hamiltonian.
 - `save_Exact_wf::Bool(false)`: save the full-CI wave functions as HDF5 files, which can be used for e.g. analysis of the wave functions and constructing surrogate models like eigenvector continuation.
 - `to`: either nothing or TimerOutput object defined in a user script.
 """
-function Pairing_Hamiltonian(;Norb_in::Int=8, Nocc_in::Int=4, gval::Float64=0.33, delta_eps::Float64=1.0,
+function PairingHamiltonian(;Norb_in::Int=8, Nocc_in::Int=4, gval::Float64=0.33, delta_eps::Float64=1.0,
                         debug_mode::Int=0, solver::String="Full-CI(2-fold)", save_Exact_wf::Bool=false,
                         to_in=nothing)
     to = ifelse(to_in==nothing, TimerOutput(), to_in)

@@ -1,24 +1,24 @@
 using Documenter
-using PairingHamiltonian
+using PairingHamiltonians
 # For development in local machine
-# include("../src/PairingHamiltonian.jl")
+# include("../src/PairingHamiltonians.jl")
 # push!(LOAD_PATH,"../src/")
 
-DocMeta.setdocmeta!(PairingHamiltonian, :DocTestSetup, :(using PairingHamiltonian); recursive=true)
+DocMeta.setdocmeta!(PairingHamiltonians, :DocTestSetup, :(using PairingHamiltonians); recursive=true)
 makedocs(;
-         modules=[PairingHamiltonian],
+         modules=[PairingHamiltonians],
          authors="SotaYoshida <syoshida@cc.utsunomiya-u.ac.jp>",
-         repo="https://github.com/SotaYoshida/PairingHamiltonian.jl/blob/{commit}{path}#{line}",
-         sitename="PairingHamiltonian.jl",
+         repo="https://github.com/SotaYoshida/PairingHamiltonians.jl/blob/{commit}{path}#{line}",
+         sitename="PairingHamiltonians.jl",
          format=Documenter.HTML(;
                                 prettyurls=get(ENV, "CI", "false") == "true",
-                                canonical="https://SotaYoshida.github.io/PairingHamiltonian.jl",
+                                canonical="https://SotaYoshida.github.io/PairingHamiltonians.jl",
                                 assets=String[],
                                 ),
          warnonly = [:missing_docs],
          pages=[
             "Home" => "index.md",
-            "Contributing to PairingHamiltonian" => "contributing.md",
+            "Contributing to PairingHamiltonians" => "contributing.md",
             "Hamiltonian" => "hamiltonian.md",
             "Many-body methods" => [
                 "Full CI" => "fullCI.md",
@@ -33,6 +33,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/SotaYoshida/PairingHamiltonian.jl.git",
+    repo="github.com/SotaYoshida/PairingHamiltonians.jl.git",
     devbranch="dev",
 )

@@ -1,9 +1,9 @@
 # using released version
-using PairingHamiltonian
+using PairingHamiltonians
 
 # using a local version for development
-#include("src/PairingHamiltonian.jl")
-#using .PairingHamiltonian
+#include("src/PairingHamiltonians.jl")
+#using .PairingHamiltonians
 
 using Glob
 using HDF5

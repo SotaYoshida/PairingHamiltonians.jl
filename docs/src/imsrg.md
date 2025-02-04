@@ -12,7 +12,7 @@ julia -t 12 path_to_script.jl
 Some functions in the package are already parallelized, but it may be still insufficient for large systems.
 
 ```@autodocs
-Modules = [PairingHamiltonian]
+Modules = [PairingHamiltonians]
 Pages = ["imsrg.jl"]
 ``` 
 

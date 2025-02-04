@@ -17,7 +17,7 @@ One can use the following methods to solve the pairing Hamiltonian with the pack
 
 
 ```@autodocs
-Modules = [PairingHamiltonian]
+Modules = [PairingHamiltonians]
 Pages = ["hamiltonian.jl"]
 ``` 
 

@@ -5,7 +5,7 @@ The HF is nothing but a naive filling for the global pairing Hamiltonian, but it
 For this reason, some functions are not necessary for the HF method, but they are implemented for future use.
 
 ```@autodocs
-Modules = [PairingHamiltonian]
+Modules = [PairingHamiltonians]
 Pages = ["hartreefock.jl"]
 ``` 
 

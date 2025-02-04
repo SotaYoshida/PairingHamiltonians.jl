@@ -10,7 +10,7 @@ Naively, the dimension of the Hamiltonian matrix scales ${}_{N_\mathrm{orb}} C_{
 For half-filled case, current limitation in a laptop may be around $N_\mathrm{orb} \approx 30$.
 
 ```@autodocs
-Modules = [PairingHamiltonian]
+Modules = [PairingHamiltonians]
 Pages = ["fullCI.jl"]
 ``` 
 

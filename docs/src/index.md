@@ -1,8 +1,8 @@
-# PairingHamiltonian.jl
+# PairingHamiltonians.jl
 
 Julia package to solve pairing Hamiltonian with a bunch of many-body methods used in nuclear physics.
 
-## Why I Created PairingHamiltonian.jl
+## Why I Created PairingHamiltonians.jl
 
 I started to use Julia in 2018, and I was fascinated by the performance, the simplicity of the language, and 
 the philosophy of the Julia language, such as the following:
@@ -34,19 +34,19 @@ First, prepare Julia environment.
 
 Second, add the package in Pkg mode of the Julia REPL.
 ```julia
-julia>]add PairingHamiltonian
+julia>]add PairingHamiltonians
 ```
 
 Then, you can use the package as follows.
 ```julia
-using PairingHamiltonian
+using PairingHamiltonians
 ```
 
 That's it. You are ready to use the package.
 
 ## Package features 
 
-PairingHamiltonian.jl is a Julia package to solve the pairing Hamiltonian with a bunch of many-body machinery.
+PairingHamiltonians.jl is a Julia package to solve the pairing Hamiltonian with a bunch of many-body machinery.
 The package is covering the following methods:
 
 - Full-CI/Exact diagonalization 
@@ -66,4 +66,4 @@ This package is designed to be an open-source software, and the author is welcom
 
 Especially, the author would like to get feedback from students who are using this package to learn the many-body methods in nuclear physics.
 Of course, contributions from other fields are highly welcome.
-Making issues and pull requests are welcome. More details are in the [Contributing to PairingHamiltonian.jl]().
+Making issues and pull requests are welcome. More details are in the [Contributing to PairingHamiltonians.jl]().

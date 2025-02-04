@@ -1,9 +1,9 @@
 # using released version
-using PairingHamiltonian
+using PairingHamiltonians
 
 # using a local version for development
-#include("src/PairingHamiltonian.jl")
-#using .PairingHamiltonian
+#include("src/PairingHamiltonians.jl")
+#using .PairingHamiltonians
 
 using Plots
 using TimerOutputs
@@ -77,7 +77,7 @@ function run_test(;debug_mode=0)
             if method == "Full-CI(2-fold)" && write_wf
                 tf_write_wf = true
             end
-            @timeit to "$method" Eret = Pairing_Hamiltonian(Norb_in=Norb, Nocc_in=Nocc, gval=gval, 
+            @timeit to "$method" Eret = PairingHamiltonian(Norb_in=Norb, Nocc_in=Nocc, gval=gval, 
                                                       debug_mode=debug_mode, solver=method,  save_Exact_wf=tf_write_wf,
                                                       to_in=to)
             for key in keys(Eret)
@@ -108,7 +108,7 @@ function for_developing_a_method()
         println("gval = $gval")
         for method in methods
             @timeit to "$method" begin
-                Eret = Pairing_Hamiltonian(;Norb_in=Norb, Nocc_in=Nocc, gval=gval,
+                Eret = PairingHamiltonian(;Norb_in=Norb, Nocc_in=Nocc, gval=gval,
                                             debug_mode=debug_mode, solver=method, save_Exact_wf=false,
                                             to_in=to)
             end

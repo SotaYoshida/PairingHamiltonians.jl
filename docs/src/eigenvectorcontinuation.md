@@ -2,7 +2,7 @@
 
 
 ```@autodocs
-Modules = [PairingHamiltonian]
+Modules = [PairingHamiltonians]
 Pages = ["eigenvector_continuation.jl"]
 ``` 
 
