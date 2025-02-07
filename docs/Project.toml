@@ -1,4 +1,4 @@
 [deps]
 
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-PairingHamiltonians = "0e39546d-869d-4f2a-bc21-e92ab20deea1"
+PairingHamiltonians = "7c418f91-b4e2-4ebb-9133-e292c28f024b"
