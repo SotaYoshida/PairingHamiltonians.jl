@@ -28,7 +28,7 @@ This is for the summer school in Japan, so the materials are written in Japanese
 I have been developing another Julia package, [NuclearToolkit.jl](https://github.com/SotaYoshida/NuclearToolkit.jl) covering chiral EFT potentials, and methods like ones in this package.
 After getting used to methods provided in this package, you can use the NuclearToolkit.jl to solve more realistic nuclear physics problems.
 
-## Installation and example
+## Installation
 
 First, prepare Julia environment.
 

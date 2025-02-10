@@ -19,7 +19,6 @@ The package covers the following methods:
 
 ## Installation
 
-Note: This package is still under development. The following instructions are not working yet.
 
 Assuming you have Julia installed, you can install the package by running the following commands in the Julia REPL:
 ```julia
@@ -35,4 +34,6 @@ If you cloned the repository, you are ready to run a simple example in the `exam
 ```
 
 where `12` is the number of threads. Note that the only IM-SRG part has some parallelization.
+
+More details can be found in the [documentation](https://SotaYoshida.github.io/PairingHamiltonians.jl/dev).
 

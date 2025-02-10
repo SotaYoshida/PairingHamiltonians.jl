@@ -1,6 +1,6 @@
 using Documenter
 using PairingHamiltonians
-# For development in local machine
+# # For development in local machine
 # include("../src/PairingHamiltonians.jl")
 # push!(LOAD_PATH,"../src/")
 
@@ -18,6 +18,7 @@ makedocs(;
          warnonly = [:missing_docs],
          pages=[
             "Home" => "index.md",
+            "How to start" => "howtostart.md",
             "Contributing to PairingHamiltonians" => "contributing.md",
             "Hamiltonian" => "hamiltonian.md",
             "Many-body methods" => [

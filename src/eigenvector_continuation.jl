@@ -25,8 +25,9 @@ end
     solve_gen_eig(tildeH, tildeN)
 
 Solve the generalized eigenvalue problem ``\\tilde{H} v = E N v`` and return the minimum eigenvalue ``E``.
-Now it is implemented by the `eigen` function in Julia, but it can be ill-conditioned for large systems,
-so it is better to use e.g. Cholesky decomposition and iterative solver like `Arpack` or `KrylovKit` for more general cases.
+Now it is implemented by the `eigen` function in Julia, but it can be ill-conditioned for large systems.
+It would be better to use e.g. eigendecomposition of the overlap matrix to regularize the problem.
+This will be implemented in the future.
 """
 function solve_gen_eig(tildeH, tildeN)
     evals, evecs = eigen(tildeH, tildeN)
