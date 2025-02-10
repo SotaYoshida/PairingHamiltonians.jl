@@ -174,5 +174,82 @@ function HF(Nocc, h1b, h2b, gval, to, debug_mode=0; itnum_max=100, tol=1e-9)
 
     holes, particles = define_holes_particles(F, Nocc)
     HNO = normal_ordering(h1b, h2b, holes, particles, gval)
+
+    # Developing functions to eval. natural orbitals (not used for now)
+    eval_OnebodyDensityMatrix(h1b, gval, holes, particles)
+
     return EHF, EPT2, EPT3, HNO, holes, particles
+end
+
+"""
+
+```math
+\\begin{align}
+\\rho_{pq} & = \\bra{\\Psi} c^\\dagger_p c_q \\ket{\\Psi}
+\\ket{\\Psi} & \\approx \\ket{\\Psi^{(0)}} + \\ket{\\Psi^{(1)}} + \\ket{\\Psi^{(2)}}
+\\end{align}
+```
+
+```math
+\\rho \\approx \\rho^{(00)} + \\rho^{(11)} + \\rho^{(20)} + \\rho^{(02)}
+```
+
+where ``\\rho^{(00)}`` is the HF density matrix and the remaining terms are the correlation terms:
+
+```math
+\\begin{align}
+\\rho^{(02)}_{pq} &= \\rho^{(20)}_{qp} = \\bra{\\Psi^{(0)}} c^\\dagger_p c_q \\ket{\\Psi^{(2)}} \\\\
+\\rho^{(11)}_{pq} &=\\bra{\\Psi^{(1)}} c^\\dagger_p c_q \\ket{\\Psi^{(1)}} 
+\\end{align}
+```
+
+These can be further decomposed into the following terms:
+
+```math
+\\begin{align}
+\\rho^{(02)} &= D^{(A)} + D^{(B)} \\\\
+\\rho^{(11)} &= D^{(C)} + D^{(D)} \\\\
+D^{(A)}_{i'a'} &= \\frac{1}{2} \\sum_{abi} \\frac{H_{i'iab}H_{aba'i}}{(\\epsilon_{i'}-\\epsilon_{a'})(\\epsilon_{i'}+\\epsilon_{i}-\\epsilon_{a}-\\epsilon_{b})} \\\\
+D^{(B)}_{i'a'} &= -\\frac{1}{2} \\sum_{aij} \\frac{H_{i'aij}H_{ija'a}}{(\\epsilon_{i'}-\\epsilon_{a'})(\\epsilon_{i}+\\epsilon_{j}-\\epsilon_{a}-\\epsilon_{a'})} \\\\
+D^{(C)}_{i'j'} &= -\\frac{1}{2} \\sum_{abi} \\frac{H_{i'iab}H_{abj'i}}{(\\epsilon_{i'}+\\epsilon_{i}-\\epsilon_{a}-\\epsilon_{b})(\\epsilon_{j'}+\\epsilon_{i}-\\epsilon_{a}-\\epsilon_{b})} \\\\
+D^{(D)}_{a'b'} & = \\frac{1}{2} \\sum_{aij} \\frac{H_{a'aij}H_{ijb'a}}{(\\epsilon_{i}+\\epsilon_{j}-\\epsilon_{a}-\\epsilon_{a'})(\\epsilon_{i}+\\epsilon_{j}-\\epsilon_{a}-\\epsilon_{b'})}
+\\end{align}
+```
+
+The first two terms are exactly zero for global pairing Hamiltonian.
+"""
+function eval_OnebodyDensityMatrix(h1b, gval, holes, particles)
+    D_hh = zeros(Float64, length(holes), length(holes))
+    D_pp = zeros(Float64, length(particles), length(particles))
+    
+    for ip = 1:length(holes)
+        jp = ip # through Γ_{i'iab}Γ_{abj'i}, i = bar(i') = bar(j')
+        i = ip + ifelse(ip%2==0, -1, 1)
+        tmp = 0.0
+        for a in particles
+            b = a + ifelse(a%2==0, -1, 1) # b must be bar(a)
+            nume = (-gval)^2
+            deno = h1b[i,i] + h1b[ip,ip] - h1b[a,a] - h1b[a,a]
+            deno = deno * (h1b[jp,jp] + h1b[i,i] - h1b[a,a] - h1b[b,b])
+            tmp += nume/deno
+        end
+        D_hh[ip, jp] = -0.5 * tmp + 1.0 # 1.0 is the HF density matrix
+    end
+
+    for (idx_ap,ap) in enumerate(particles)
+        bp = ap # through Γ_{a'aij}Γ_{ijb'a}, a = bar(a') = bar(b')
+        idx_bp = idx_ap
+        a = ap + ifelse(ap%2==0, -1, 1)
+        tmp = 0.0
+        for i in holes
+            j = i + ifelse(i%2==0, -1, 1) # j must be bar(i)
+            nume = (-gval)^2
+            deno = h1b[i,i] + h1b[j,j] - h1b[a,a] - h1b[ap,ap]
+            deno = deno * (h1b[i,i] + h1b[j,j] - h1b[a,a] - h1b[bp,bp])
+            tmp += nume/deno
+        end
+        D_pp[idx_ap, idx_bp] = 0.5 * tmp 
+    end
+    @assert tr(D_hh) + tr(D_pp) ≈ length(holes)
+    return D_hh, D_pp
 end

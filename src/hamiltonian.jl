@@ -266,8 +266,8 @@ function eval_h1_h2(Nq, eps::Vector{Float64}, g::Float64, sum_step)
 end
 
 """
-    PairingHamiltonian(to; Norb_in::Int=8, Nocc_in::Int=4, gval::Float64=0.33, delta_eps::Float64=1.0,
-                        debug_mode::Int=0, solver::String="FCI(2-fold)", save_Exact_wf::Bool=false)
+    PairingHamiltonian(;Norb_in::Int=8, Nocc_in::Int=4, gval::Float64=0.33, delta_eps::Float64=1.0,
+                        debug_mode::Int=0, solver::String="FCI(2-fold)", save_Exact_wf::Bool=false, to_in=nothing)
 
 Main function to evaluate the ground state energy of the pairing Hamiltonian.
 
