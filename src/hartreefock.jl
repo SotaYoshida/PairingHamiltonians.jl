@@ -175,13 +175,17 @@ function HF(Nocc, h1b, h2b, gval, to, debug_mode=0; itnum_max=100, tol=1e-9)
     holes, particles = define_holes_particles(F, Nocc)
     HNO = normal_ordering(h1b, h2b, holes, particles, gval)
 
-    # Developing functions to eval. natural orbitals (not used for now)
+    # Developing functions to eval. one-body densiti matrix (not used for now)
     eval_OnebodyDensityMatrix(h1b, gval, holes, particles)
 
     return EHF, EPT2, EPT3, HNO, holes, particles
 end
 
 """
+    eval_OnebodyDensityMatrix(h1b, gval, holes, particles)
+
+Function to evaluate the one-body density matrix (ODM).
+For pairing Hamiltonians, the ODM is already diagonal.
 
 ```math
 \\begin{align}
