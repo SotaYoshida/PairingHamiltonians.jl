@@ -137,9 +137,6 @@ function eval_χ_pp!(χ_pp, F, t2_pphh, Nocc, gval)
     return nothing
 end
 
-"""
-To get continuous idx for pp or hh from `i` and `j`.
-"""
 function get_vecidx(i, j, N)
     @assert i != j "i == j should not happen in get_vecidx"
     if i > j
@@ -148,10 +145,6 @@ function get_vecidx(i, j, N)
     return N*(i-1) - div(i*(i-1), 2) + j - i
 end
 
-"""
-To get `i` and `j` for pp or hh from a vectorized index.
-Note that `i` must be less than `j`.
-"""
 function vecidx_to_idx(idx, N)
     if idx <= N-1
         return 1, idx+1
@@ -167,11 +160,14 @@ function vecidx_to_idx(idx, N)
 end
 
 """
+
+Corresponding to the Eq.(8.48) of LNP volume 936.
+
 ```math
 \\langle kl | \\chi | ij \\rangle  = \\langle kl | v | ij \\rangle + \\frac{1}{2} \\sum_{cd} \\langle kl | v | cd \\rangle \\langle cd | t | ij \\rangle
 ```
 """
-function eval_χ_hhhh!(χ_hhhh, t2_pphh, dim, Nocc, gval) # 8.48
+function eval_χ_hhhh!(χ_hhhh, t2_pphh, dim, Nocc, gval) 
     dim_p = dim - Nocc
     dim_h = Nocc
     dim_hh, dim_hp, dim_pp = eval_2bket_dim(dim_h, dim_p)
@@ -199,7 +195,14 @@ function eval_χ_hhhh!(χ_hhhh, t2_pphh, dim, Nocc, gval) # 8.48
     return nothing
 end
 
-function eval_χ_pppp!(χ_pppp, t2_pphh, dim, Nocc, gval) # 8.50
+"""
+Corresponding to the Eq.(8.50) of LNP volume 936.
+
+```math
+\\langle ab | \\chi | cd \\rangle = \\langle ab | v | cd \\rangle
+```
+"""
+function eval_χ_pppp!(χ_pppp, t2_pphh, dim, Nocc, gval)
     dim_p = dim - Nocc
     dim_h = Nocc
     dim_hh, dim_hp, dim_pp = eval_2bket_dim(dim_h,dim_p)
@@ -221,7 +224,15 @@ function eval_χ_pppp!(χ_pppp, t2_pphh, dim, Nocc, gval) # 8.50
     return nothing
 end
 
-function eval_χ_hphp!(χ_hphp, t2_pphh, dim, Nocc, gval) # 8.49
+"""
+Corresponding to the Eq.(8.49) of LNP volume 936.
+
+```math
+\\langle kb | \\chi | cj \\rangle = \\langle kb | v | cj \\rangle 
++ \\frac{1}{2} \\sum_{ld} \\langle kl | v | cd \\rangle \\langle db | t | lj \\rangle,
+```
+"""
+function eval_χ_hphp!(χ_hphp, t2_pphh, dim, Nocc, gval) 
     dim_p = dim - Nocc
     dim_h = Nocc
     for k = 1:dim_h
@@ -241,7 +252,29 @@ function eval_χ_hphp!(χ_hphp, t2_pphh, dim, Nocc, gval) # 8.49
 end
 
 """
-`i,j,k` are hole indices, `a,b,c` are particle indices.
+    construct_chi(F, t2_pphh, Nocc, gval, debug_mode=0)
+
+Function to construct the intermediate matrix ``\\chi`` for the CCD calculation.
+
+```math
+\\begin{align*}
+\\langle b | \\chi | c \\rangle 
+& = \\langle b | f | c \\rangle  
+- \\frac{1}{2} \\sum_{kld} \\langle bd | t | kl \\rangle \\langle kl | v | cd \\rangle, \\\\
+\\langle k | \\chi | j \\rangle 
+& = \\langle k | f | j \\rangle
++ \\frac{1}{2} \\sum_{cdl} \\langle kl | v | cd \\rangle \\langle cd | t | jl \\rangle, \\\\
+\\langle kl | \\chi | ij \\rangle
+& = \\langle kl | v | ij \\rangle
++ \\frac{1}{2} \\sum_{cd} \\langle kl | v | cd \\rangle \\langle cd | t | ij \\rangle, \\\\
+\\langle kb | \\chi | cj \\rangle
+& = \\langle kb | v | cj \\rangle 
++ \\frac{1}{2} \\sum_{ld} \\langle kl | v | cd \\rangle \\langle db | t | lj \\rangle, \\\\
+\\langle ab | \\chi | cd \\rangle &= \\langle ab | v | cd \\rangle.
+\\end{align*}
+```
+
+where `i,j,k` are hole indices, `a,b,c` are particle indices.
 """
 function construct_chi(F, t2_pphh, Nocc, gval, debug_mode=0)
     dim = size(F, 1)
@@ -291,6 +324,30 @@ function update_χ!(χ, F, t2_pphh, Nocc, gval)
     return nothing
 end
 
+"""
+    eval_Hbar_pphh!(Hbar_pphh, t2_pphh, t2_pphh_new, F, χ::chi_intermediate, Nocc, gval)
+
+Function to evaluate the Hbar operator for the CCD calculation and update the t2 amplitudes.
+
+```math
+\\begin{align*}
+t^{ab \\mathrm{(new)}}_{ij} =  \\frac{1}{\\epsilon^{ab}_{ij}} & \\left\\{ 
+ \\langle ab | \\hat{v} | ij \\rangle
++\\hat{P}(ab) \\sum_c \\langle b | \\chi | c \\rangle t^{ac}_{ij}
+-\\hat{P}(ij) \\sum_k \\langle k | \\chi | j \\rangle t^{ab}_{ik} \\right. \\\\
+& \\left. + \\frac{1}{2} \\sum_{cd} \\langle ab | \\chi | cd \\rangle t^{cd}_{ij}
++ \\frac{1}{2} \\sum_{kl} \\langle kl | \\chi | ij \\rangle t^{ab}_{kl} + \\hat{P}(ij) \\hat{P}(ab) \\sum_{kc} \\langle kb | \\chi | cj \\rangle t^{ac}_{ik} \\right\\}
+\\end{align*}
+```
+
+To avoid being stuck, t2 values will be updated by the following mixing rule:
+
+```math
+t^{ab \\mathrm{(new)}}_{ij} = \\alpha t^{ab \\mathrm{(new)}}_{ij} + (1-\\alpha) t^{ab}_{ij}
+```
+
+where `\\alpha` is the `mix_ratio` specified in `CCD` function.
+"""
 function eval_Hbar_pphh!(Hbar_pphh, t2_pphh, t2_pphh_new, F, χ::chi_intermediate, Nocc, gval)
     dim = size(F, 1)
     dim_p = dim - Nocc
@@ -381,6 +438,15 @@ function eval_Hbar_pphh!(Hbar_pphh, t2_pphh, t2_pphh_new, F, χ::chi_intermediat
     return nothing
 end
 
+"""
+    eval_ECC(F, t2_pphh, Nocc, gval)
+
+Function to evaluate the CCD energy.
+
+```math
+E_{\\mathrm{CC}} = \\frac{1}{4}\\sum_{ijab} \\langle ab | \\hat{v} | ij \\rangle t^{ab}_{ij}
+```
+"""
 function eval_ECC(F, t2_pphh, Nocc, gval)
     dim = size(F, 1)
     E2b = 0.0

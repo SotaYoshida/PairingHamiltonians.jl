@@ -19,15 +19,13 @@ Norb = 20
 Nocc = 10 
 
 debug_mode = 0
-gvals = collect(-1.0:0.1:1.0)
+gvals = collect(-1.0:0.01:1.0)
 
 for gval in gvals
     println("gval = $gval")
     for method in methods
-        @timeit to "$method" begin
-            Eret = PairingHamiltonian(;Norb_in=Norb, Nocc_in=Nocc, gval=gval,
-                                        debug_mode=debug_mode, solver=method)
-        end
+        Eret = PairingHamiltonian(;Norb_in=Norb, Nocc_in=Nocc, gval=gval,
+                                    debug_mode=debug_mode, solver=method)
     end
 end
 ```
@@ -35,7 +33,6 @@ end
 For `Norb=20` and `Nocc=10`, the results will be like:
 
 ![](Energies_Norb20_Nocc10.png)
-
 
 
 ## Optional arguments
