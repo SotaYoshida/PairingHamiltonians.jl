@@ -346,7 +346,7 @@ To avoid being stuck, t2 values will be updated by the following mixing rule:
 t^{ab \\mathrm{(new)}}_{ij} = \\alpha t^{ab \\mathrm{(new)}}_{ij} + (1-\\alpha) t^{ab}_{ij}
 ```
 
-where `\\alpha` is the `mix_ratio` specified in `CCD` function.
+where ``\\alpha`` is the `mix_ratio` specified in `CCD` function.
 """
 function eval_Hbar_pphh!(Hbar_pphh, t2_pphh, t2_pphh_new, F, χ::chi_intermediate, Nocc, gval)
     dim = size(F, 1)

@@ -19,7 +19,7 @@ Norb = 20
 Nocc = 10 
 
 debug_mode = 0
-gvals = collect(-1.0:0.01:1.0)
+gvals = collect(-0.85:0.05:0.85)
 
 for gval in gvals
     println("gval = $gval")
