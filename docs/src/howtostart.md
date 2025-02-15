@@ -8,7 +8,7 @@ One may use the following script to run the Hamiltonian for different methods an
 
 ```julia
 # using release version
-using PairingHamiltonian
+using PairingHamiltonians
 
 # # using a local version for development
 # include("src/PairingHamiltonians.jl")
