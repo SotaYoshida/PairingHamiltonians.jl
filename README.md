@@ -30,7 +30,7 @@ Assuming you have Julia installed, you can install the package by running the fo
 If you cloned the repository, you are ready to run a simple example in the `examples` folder. Just run the following commands in terminal:
 
 ```bash
-```julia -t 12 examples/sample_script.jl
+julia -t 12 examples/sample_script.jl
 ```
 
 where `12` is the number of threads. Note that the only IM-SRG part has some parallelization.
